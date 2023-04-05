@@ -1,0 +1,56 @@
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, #2e3192, #312b7c);
+  padding: 0.5% 1%;
+}
+.company-logo {
+  font-size: 2.5rem;
+background: orangered;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: grab;
+}
+.nav-items {
+  display: flex;
+}
+.nav-item {
+     margin: 0 2rem;
+    cursor: grab;
+}
+.lettre_nav {
+  font-size: 1.1rem;
+  letter-spacing: 0.05rem;
+  position: relative;
+  background: black;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* .lettre_nav::before {
+  content: "";
+background-color: aqua;
+  width: 100%;
+  height: 0.05rem;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 150ms;
+}
+.lettre_nav:hover::before {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+.menu-toggle {
+  display: none;
+}
+.bx-menu,
+.bx-x {
+  cursor: pointer;
+background-color: red;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color:black;
+  display: none !important;
+} */

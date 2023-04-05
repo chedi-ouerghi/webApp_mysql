@@ -1,0 +1,94 @@
+/* Sidebar Component */
+.sidebar {
+      /* background: linear-gradient(to bottom, #2e3192, #312b7c); */
+      background-image: url("https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg");
+  color: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar-header {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+.sidebar_menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 2rem;
+  width: 100%;
+}
+.btn_sidebar{
+  color: rgb(255 247 247);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+.btn_sidebar:focus-visible{
+      color: rgb(255 247 247);
+    display: flex;
+    justify-content: center;
+    font-weight: 700;
+    background: darkslategray;
+  }
+  .sidebar_menu{
+        /* background: linear-gradient(to bottom, #2e3192, #312b7c); */
+        background: transparent;
+
+  }
+
+.sidebar_menu .btn_sidebar {
+  margin-bottom: 5.5rem;
+  background-color: transparent;
+  border: none;
+  color: white;
+  text-align: left;
+  width: 100%;
+  /* padding: 1rem; */
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar_menu .btn_sidebar:hover {
+  /* background-color: #1a237e; */
+  color: white;
+}
+
+.sidebar_menu .btn_sidebar .anticon {
+  margin-right: 0.5rem;
+}
+
+.sidebar_menu .ant-btn-link {
+  text-align: center;
+  width: 100%;
+}
+
+/* Sidebar Icons */
+.sidebar_icon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+/* §§§§§§§§§§§§§§§§§§§§§§§§§§§§./ */
+.sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  z-index: 9999;
+}
+
+.sidebar-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}

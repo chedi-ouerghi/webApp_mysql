@@ -1,0 +1,17 @@
+.page_login{
+background:url('./image/soleil1.jpg');
+width: 100%;
+height: 685px;
+}
+
+/* @media (min-width: 685px) {
+  .page_login {
+    height: calc(685px - 80px); 
+  }
+}
+
+@media (min-width: 1024px) {
+  .page_login {
+    height: calc(685px - 120px);
+  }
+} */

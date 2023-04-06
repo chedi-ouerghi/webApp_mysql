@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Modal, Form, Input, DatePicker, Select, Checkbox } from 'antd';
-import Formulaire from './Formulaire';
+// import Formulaire from './Formulaire';
 import './formulaire.css'
 import Search from 'antd/es/input/Search';
 import { SearchOutlined } from '@ant-design/icons';
@@ -113,7 +113,7 @@ const Tableau = () => {
           onCancel={handleCancel}
           footer={null}
         >
-          <Formulaire form={form} onCreate={handleCreate} onCancel={handleCancel} />
+          {/* <Formulaire form={form} onCreate={handleCreate} onCancel={handleCancel} /> */}
         </Modal>
         </div>
         </div>

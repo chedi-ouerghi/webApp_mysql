@@ -1,0 +1,21 @@
+.search-bar {
+ font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 2.4375em;
+    font-family: Roboto, sans-serif;
+    box-sizing: border-box;
+    cursor: text;
+    border: 2px solid gainsboro;
+    display: inline-flex;
+    align-items: center;
+    background: rgb(248, 250, 252);
+    width: 21%;
+    border-radius: 8px;
+    /* height: 38px; */
+}
+.search-bar:hover{
+    border: 2px solid rgb(37, 10, 144);
+}
+.search-bar::after{
+    border: 2px solid rgb(37, 10, 144);
+}

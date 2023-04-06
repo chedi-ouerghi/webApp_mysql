@@ -1,94 +1,61 @@
-/* Sidebar Component */
-.sidebar {
-      /* background: linear-gradient(to bottom, #2e3192, #312b7c); */
-      background-image: url("https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg");
-  color: white;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .sidebar-header {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  font-weight: bold;
-  text-align: center;
-}
-.sidebar_menu {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  margin-top: 2rem;
-  width: 100%;
-}
-.btn_sidebar{
-  color: rgb(255 247 247);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-.btn_sidebar:focus-visible{
-      color: rgb(255 247 247);
-    display: flex;
-    justify-content: center;
-    font-weight: 700;
-    background: darkslategray;
-  }
-  .sidebar_menu{
-        /* background: linear-gradient(to bottom, #2e3192, #312b7c); */
-        background: transparent;
-
-  }
-
-.sidebar_menu .btn_sidebar {
-  margin-bottom: 5.5rem;
-  background-color: transparent;
-  border: none;
-  color: white;
-  text-align: left;
-  width: 100%;
-  /* padding: 1rem; */
-  transition: all 0.2s ease-in-out;
-  display: flex;
   align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  /* background-color: rgb(238, 242, 246); */
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.sidebar_menu .btn_sidebar:hover {
-  /* background-color: #1a237e; */
-  color: white;
+.collapse-icon {
+ position: absolute;
+    top: -7%;
+    left: 11%;
+    cursor: pointer;
+    font-size: x-large;
+}
+.menu-sidebar {
+  background-color: rgb(204, 207, 210);
+  color: #0e0e0e;
+  transition: all 0.3s ease-in-out;
 }
 
-.sidebar_menu .btn_sidebar .anticon {
-  margin-right: 0.5rem;
+.menu-item:hover {
+  background-color: #2e445a;
+  color: #fff;
 }
 
-.sidebar_menu .ant-btn-link {
-  text-align: center;
-  width: 100%;
+.menu-item.ant-menu-item-selected {
+  background-color: #2e445a;
+  color: #fff;
 }
-
-/* Sidebar Icons */
-.sidebar_icon {
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
-}
-
-/* §§§§§§§§§§§§§§§§§§§§§§§§§§§§./ */
-.sidebar {
-  position: fixed;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 300px;
-  z-index: 9999;
-}
-
-.sidebar-particles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
+.menu-sidebar {
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  z-index: -1;
+  background-color: rgb(204, 207, 210);
+  color: #0e0e0e;
+  transition: all 0.3s ease-in-out;
 }
+
+.sidebar-footer {
+    /* margin: 0.5% 0.75%; */
+    padding: 1rem;
+  background-color: rgb(204, 207, 210);
+  border-radius: 9px;
+  border-top: 1px solid #f0f0f0;
+  text-align: center;
+  color: black;
+  width: 100%;
+      margin-block-end: 30%;
+}
+
+.menu-item {
+  flex: 1;
+}
+
+.sidebar-footer-container {
+  margin-top: auto;
+}
+

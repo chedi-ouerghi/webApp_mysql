@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, message, Form, Checkbox, Modal, Button, Empty, Popover, Pagination } from 'antd';
-import { createApplication, deleteApplication, getApplications, updateApplication } from '../../../api/apiApplicarion';
+import { createApplication, deleteApplication, getApplications, updateApplication } from '../../api/apiApplicarion';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { GrAdd } from "react-icons/gr";
 import './tapp.css';
@@ -274,7 +274,7 @@ const handleOutsideDeleteClick = () => {
 
   // pagination
 
-  const PAGE_SIZE = 17;
+  const PAGE_SIZE = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
     const handleSort = (column) => {

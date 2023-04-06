@@ -3,8 +3,8 @@ import { Button, Checkbox, Empty, Form, Input, message, Modal, Pagination, Selec
 import React, { useEffect, useRef, useState } from "react";
 import { MdEditDocument, MdCreateNewFolder } from 'react-icons/md';
 import { GrAdd, GrLinkNext,GrLinkPrevious } from "react-icons/gr";
-import { getApplications } from "../../../api/apiApplicarion";
-import { createModule, deleteModule, getModules, updateModule } from "../../../api/apiModule";
+import { getApplications } from "../../api/apiApplicarion";
+import { createModule, deleteModule, getModules, updateModule } from "../../api/apiModule";
 import './module.css';
 
 const ModuleEssai = () => {
@@ -310,7 +310,7 @@ sortDirections: ['ascend', 'descend', 'ascend'],
 
   // pagination
 
-  const PAGE_SIZE = 17;
+  const PAGE_SIZE = 14;
   const [currentPage, setCurrentPage] = useState(1);
 
     const handleSort = (column) => {
@@ -426,13 +426,13 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
     <div className='table_container'>
     <table style={{ color: "black", borderCollapse: 'collapse', border: '2px solid black', width: '97%', margin: '0% 1.5%' }}>
   <thead style={{height:'45px'}}>
-    <tr style={{ color: 'white', backgroundColor: 'darkblue' }}>
+    <tr style={{ color: 'white', backgroundColor: '#2e445a' }}>
       {columns.map((column) => (
-        <th key={column.key} onClick={() => column.sorter && handleSort(column)} style={{ border: '2px solid black', backgroundColor: 'darkblue',fontWeight:'400' }}>
+        <th key={column.key} onClick={() => column.sorter && handleSort(column)} style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>
           {column.title}
         </th>
       ))}
-      <th style={{ border: '2px solid black', backgroundColor: 'darkblue',fontWeight:'400' }}>Action</th>
+      <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th>
     </tr>
   </thead>
   <tbody >
@@ -486,6 +486,12 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
           }}>
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
         </div>}
+        <div className="footer_table"
+          style={{
+            display: 'flex', justifyContent: 'space-between'
+            ,width:'100%'
+            // , position: 'fixed', width: '92%', top: '89%'
+          }}>
    <div className="pagination" style={{color:'black'}}>
           <Pagination
             simple
@@ -503,6 +509,7 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
             {rowCount}
           </span>
           </p>
+          </div>
       </div>
       
 

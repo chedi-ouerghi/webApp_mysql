@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
-import Home from './components/loginform/home/home/Home';
-import LoginForm from './components/loginform/pages/Lgin/LoginForm';
-import Register from './components/loginform/pages/Lgin/Register';
+import Home from './components/home/home/Home';
+import LoginForm from './components/pages/Lgin/LoginForm';
+import Register from './components/pages/Lgin/Register';
 
 function App() {
   return (

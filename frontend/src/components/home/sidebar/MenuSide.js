@@ -1,116 +1,94 @@
-import { useState } from "react";
+import React from 'react';
+import { Layout, Menu } from 'antd';
+import { Link } from 'react-router-dom';
 import {
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  useDisclosure,
-  Button,
-  VStack,
-  Text,
-  IconButton,
-  Icon,
-  Stack,
-} from "@chakra-ui/react";
-import { ChevronRightIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
+  AppstoreOutlined,
+  MailOutlined,
+  SettingOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Avatar } from 'antd';
+import './sidebar.css'
 
-const MenuSide = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [activeLink, setActiveLink] = useState("");
+const { Sider } = Layout;
 
-  return (
-    <>
-      <Button colorScheme="teal" onClick={onOpen}
-        // position="fixed" top="0" left="0"
-        >
-        <Icon as={ChevronRightIcon} />
-      </Button>
-      <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Navigation</DrawerHeader>
-          <DrawerBody>
-            <VStack spacing="4" align="stretch">
-              <Stack
-                direction="row"
-                alignItems="center"
-                justify="space-between"
-                px="4"
-              >
-                <Text fontWeight="bold" fontSize="md">
-                  Pages
-                </Text>
-              </Stack>
-              <Link to="/home" onClick={() => setActiveLink("/home")}>
-                <Button
-                  variant="ghost"
-                  isActive={activeLink === "/home"}
-                  w="100%"
-                  justifyContent="flex-start"
-                  pl="4"
-                >
-                  Application
-                </Button>
-              </Link>
-              <Link to="/home/module" onClick={() => setActiveLink("/home/module")}>
-                <Button
-                  variant="ghost"
-                  isActive={activeLink === "/home/module"}
-                  w="100%"
-                  justifyContent="flex-start"
-                  pl="4"
-                >
-                  Module
-                </Button>
-              </Link>
-              <Link to="/home/pages" onClick={() => setActiveLink("/home/pages")}>
-                <Button
-                  variant="ghost"
-                  isActive={activeLink === "/home/pages"}
-                  w="100%"
-                  justifyContent="flex-start"
-                  pl="4"
-                >
-                  Pages
-                </Button>
-              </Link>
-              <Link to="/home/user" onClick={() => setActiveLink("/home/user")}>
-                <Button
-                  variant="ghost"
-                  isActive={activeLink === "/home/user"}
-                  w="100%"
-                  justifyContent="flex-start"
-                  pl="4"
-                >
-                  Users
-                </Button>
-              </Link>
-              <Link to="/home/notifications" onClick={() => setActiveLink("/home/notifications")}>
-                <Button
-                  variant="ghost"
-                  isActive={activeLink === "/home/notifications"}
-                  w="100%"
-                  justifyContent="flex-start"
-                  pl="4"
-                >
-                  Notifications
-                </Button>
-              </Link>
-              <Link to="/logout">
-                <Button w="100%" justifyContent="flex-start" pl="4">
-                  Logout
-                </Button>
-              </Link>
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-    </>
-  );
-};
+class SidebarMenu extends React.Component {
+  state = {
+    collapsed: false,
+    selectedKey: '1',
+  };
 
-export default MenuSide;
+  onCollapse = collapsed => {
+    this.setState({ collapsed });
+  };
+
+  handleClick = e => {
+    this.setState({ selectedKey: e.key });
+  };
+
+  render() {
+    const { collapsed, selectedKey } = this.state;
+
+    return (
+
+   <Sider
+  collapsible
+  collapsed={collapsed}
+  onCollapse={this.onCollapse}
+  theme="light"
+        style={{
+          height: '100vh'
+        }}
+
+      >
+  <div className="sidebar-header">
+    {!collapsed && (
+      <Avatar
+        size="large"
+        style={{ backgroundColor: '#87d068', marginBottom: '1rem' }}
+        icon={<UserOutlined />}
+      />
+    )}
+    <div
+      className="collapse-icon"
+      onClick={() => this.onCollapse(!collapsed)}
+      style={{ color: 'black' }}
+    >
+      {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+    </div>
+  </div>
+  <div className="menu-sidebar">
+    <Menu
+      theme="light"
+      defaultSelectedKeys={['1']}
+      selectedKeys={[selectedKey]}
+      mode="inline"
+      onClick={this.handleClick}
+    >
+ <Menu.Item key="1" icon={<MailOutlined />} className="menu-item">
+            <Link to="/home">Application</Link>
+          </Menu.Item>
+          <Menu.Item key="2" icon={<AppstoreOutlined />} className="menu-item">
+            <Link to="/home/module">Module</Link>
+          </Menu.Item>
+          <Menu.Item key="3" icon={<SettingOutlined />} className="menu-item">
+            <Link to="/settings">Pages</Link>
+          </Menu.Item>
+          <Menu.Item key="4" icon={<SettingOutlined />} className="menu-item">
+            <Link to="/settings">User</Link>
+          </Menu.Item>
+         
+          </Menu>
+  </div>
+  <div className="sidebar-footer-container">
+     {!collapsed && <div className="sidebar-footer">Footer</div>}
+          </div>
+</Sider>
+
+    );
+  }
+}
+
+export default SidebarMenu;

@@ -5,6 +5,7 @@ import { createApplication, deleteApplication, getApplications, updateApplicatio
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { GrAdd } from "react-icons/gr";
 import './tapp.css';
+import Search from 'antd/es/transfer/search';
 
 const TApp = () => {
   const [applications, setApplications] = useState([]);
@@ -274,7 +275,7 @@ const handleOutsideDeleteClick = () => {
 
   // pagination
 
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 14;
   const [currentPage, setCurrentPage] = useState(1);
 
     const handleSort = (column) => {
@@ -339,7 +340,7 @@ const handleOutsideDeleteClick = () => {
       <div className='actions_bar'>
         <div style={{display:'flex',gap:'10%',width:'40%',alignItems:"center"}}>
           <Form className="search_bar">
-      <Input
+      <Search
             placeholder="Rechercher"
             title="Rechercher "
             prefix={<SearchOutlined /> }
@@ -390,13 +391,13 @@ const handleOutsideDeleteClick = () => {
         <table style={{ color: "black", borderCollapse: 'collapse', border: '2px solid black', width: '97%', margin: '0% 1.5%' }}>
           
    <thead style={{height:'45px'}}>
-  <tr style={{ color: 'white', backgroundColor: 'darkblue' }}>
+  <tr style={{ color: 'white', backgroundColor: '#2e445a' }}>
     {columns.map((column) => (
-      <th key={column.key} onClick={() => column.sorter && handleSort(column)} style={{ border: '2px solid black', backgroundColor: 'darkblue',fontWeight:'400' }}>
+      <th key={column.key} onClick={() => column.sorter && handleSort(column)} style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>
         {column.title}
       </th>
     ))}
-    <th style={{ border: '2px solid black', backgroundColor: 'darkblue',fontWeight:'400' }}>Action</th>
+    <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th>
   </tr>
 </thead>
       <tbody >
@@ -432,11 +433,17 @@ const handleOutsideDeleteClick = () => {
           }}>
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
         </div>}
+       <div className="footer_table"
+          style={{
+            display: 'flex', justifyContent: 'space-between'
+            ,width:'100%'
+            // , position: 'fixed', width: '92%', top: '89%'
+          }}>
    <div className="pagination" style={{color:'black'}}>
           <Pagination
             simple
       current={currentPage}
-      pageSize={PAGE_SIZE}
+            pageSize={PAGE_SIZE}
       total={filteredApplications.length}
       onChange={setCurrentPage}
     />
@@ -449,6 +456,7 @@ const handleOutsideDeleteClick = () => {
             {rowCount}
           </span>
           </p>
+          </div>
       </div>
       
      <Modal 

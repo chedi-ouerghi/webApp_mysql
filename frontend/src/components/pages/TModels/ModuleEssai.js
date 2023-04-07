@@ -6,6 +6,7 @@ import { GrAdd, GrLinkNext,GrLinkPrevious } from "react-icons/gr";
 import { getApplications } from "../../api/apiApplicarion";
 import { createModule, deleteModule, getModules, updateModule } from "../../api/apiModule";
 import './module.css';
+import Search from "antd/es/transfer/search";
 
 const ModuleEssai = () => {
   const [modules, setModules] = useState([]);
@@ -17,7 +18,6 @@ const [CodeModule, setCodeModule] = useState('');
 const [NomModule, setNomModule] = useState('');
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [isSortAscending, setIsSortAscending] = useState(true);
-const [filteredModules, setFilteredModules] = useState([]);
   const formRef = useRef(null);
   const [form] = Form.useForm(); // Add this line to create a form instance
 const { confirm } = Modal;
@@ -44,9 +44,11 @@ const [selectedRows, setSelectedRows] = useState([]);
   }, [modules]);
 
   
-  useEffect(() => {
-    setFilteredModules(modules);
-  }, [modules]);
+  // useEffect(() => {
+  //   setFilteredModules(modules);
+  //   console.log(filteredModules);
+    
+  // }, [modules]);
 
     // ::::::::::::::::::
   
@@ -238,23 +240,43 @@ const handleOutsideDeleteClick = () => {
 };
   const [isDataAvailable, setIsDataAvailable] = useState(true);
 
-// console.log('filteredModules:', filteredModules); // Output the value of filteredModules to the console
-const handleSearch = (value) => {
-  // console.log('Search query:', value); // Output the search query to the console
-  if (!value) {
-    setFilteredModules(modules);
-  } else {
-    const filteredData = modules.filter(
-      (module) =>
-        // module.CodeModule.toLowerCase().includes(value.toLowerCase()) ||
-        //  module.NomApplication.toLowerCase().includes(value.toLowerCase()) ||
-        module.NomModule.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredModules(filteredData);
-    setIsDataAvailable(filteredData.length > 0);
-    // setCurrentPage(1); // <-- Add this line to set the current page to 1
-  }
+  const [searchQuery, setSearchQuery] = useState('');
+const [filteredModules, setFilteredModules] = useState([]);
+
+useEffect(() => {
+  setFilteredModules(modules.filter((module) => {
+    // Si la requête de recherche est vide, on retourne tous les modules
+    if (searchQuery === '') {
+      return true;
+    }
+
+    // Sinon, on retourne les modules dont le nom inclut la requête de recherche
+    return module.NomModule.toLowerCase().includes(searchQuery.toLowerCase());
+  }));
+  setIsDataAvailable(filteredModules.length > 0);
+}, [modules, searchQuery, filteredModules]);
+
+  const handleSearch = (value) => {
+    setSearchQuery(value);
+        
 };
+
+// console.log('filteredModules:', filteredModules); // Output the value of filteredModules to the console
+// const handleSearch = (value) => {
+//   // console.log('Search query:', value); // Output the search query to the console
+//   if (!value) {
+//     setFilteredModules(modules);
+//   } else {
+//     const filteredData = modules.filter(
+//       (module) =>
+//         // module.CodeModule.toLowerCase().includes(value.toLowerCase()) ||
+//         //  module.NomApplication.toLowerCase().includes(value.toLowerCase()) ||
+//         module.NomModule.toLowerCase().includes(value.toLowerCase())
+//     );
+//     setFilteredModules(filteredData);
+//     setIsDataAvailable(filteredData.length > 0);
+//   }
+// };
 
 
 
@@ -374,7 +396,7 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
             <div className='actions_bar'>
         <div style={{display:'flex',gap:'10%',width:'40%',alignItems:"center"}}>
           <Form className="search_bar">
-      <Input
+      <Search
             placeholder="Rechercher"
             title="Rechercher "
             prefix={<SearchOutlined /> }
@@ -485,6 +507,7 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
     margin: '0% 1.5%'
           }}>
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              {/* <p>Aucune donnée trouvée.</p> */}
         </div>}
         <div className="footer_table"
           style={{

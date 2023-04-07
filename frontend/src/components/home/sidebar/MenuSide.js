@@ -32,7 +32,6 @@ class SidebarMenu extends React.Component {
     const { collapsed, selectedKey } = this.state;
 
     return (
-
    <Sider
   collapsible
   collapsed={collapsed}
@@ -58,7 +57,9 @@ class SidebarMenu extends React.Component {
     >
       {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
     </div>
-  </div>
+        </div>
+<div className='scrollbar'>
+        
   <div className="menu-sidebar">
     <Menu
       theme="light"
@@ -79,14 +80,14 @@ class SidebarMenu extends React.Component {
           <Menu.Item key="4" icon={<SettingOutlined />} className="menu-item">
             <Link to="/settings">User</Link>
           </Menu.Item>
-         
+            
           </Menu>
-  </div>
+          </div>
+</div>
   <div className="sidebar-footer-container">
      {!collapsed && <div className="sidebar-footer">Footer</div>}
           </div>
 </Sider>
-
     );
   }
 }

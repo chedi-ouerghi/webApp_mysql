@@ -20,6 +20,28 @@
   color: #0e0e0e;
   transition: all 0.3s ease-in-out;
 }
+.scrollbar{
+  overflow-y: auto;
+  	height: 500px;
+
+}
+.scrollbar::-webkit-scrollbar
+{
+  height: 50px;
+	width: 10px;
+	background-color: #f5f5f5;
+}
+.scrollbar::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	/* background-image: -webkit-gradient(linear,
+									   left bottom,
+									   left top,
+									   color-stop(0.44, rgb(122,153,217)),
+									   color-stop(0.72, rgb(73,125,189)),
+									   color-stop(0.86, rgb(28,58,148))); */
+                     background-color: #2e445a;
+}
 
 .menu-item:hover {
   background-color: #2e445a;
@@ -56,6 +78,6 @@
 }
 
 .sidebar-footer-container {
-  margin-top: auto;
+    margin-block: 20%;
 }
 

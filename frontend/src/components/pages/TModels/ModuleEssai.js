@@ -244,17 +244,18 @@ const handleOutsideDeleteClick = () => {
 const [filteredModules, setFilteredModules] = useState([]);
 
 useEffect(() => {
-  setFilteredModules(modules.filter((module) => {
-    // Si la requête de recherche est vide, on retourne tous les modules
-    if (searchQuery === '') {
-      return true;
-    }
-
-    // Sinon, on retourne les modules dont le nom inclut la requête de recherche
-    return module.NomModule.toLowerCase().includes(searchQuery.toLowerCase());
-  }));
-  setIsDataAvailable(filteredModules.length > 0);
-}, [modules, searchQuery, filteredModules]);
+  if (!searchQuery) {
+    setFilteredModules(modules);
+    setIsDataAvailable(true);
+  } else {
+    const filteredData = modules.filter(
+      (module) =>
+        module.NomModule.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredModules(filteredData);
+    setIsDataAvailable(filteredData.length > 0);
+  }
+}, [modules, searchQuery]);
 
   const handleSearch = (value) => {
     setSearchQuery(value);

@@ -50,4 +50,9 @@ background: orangered;
     border-radius: 27px;
     transition: all 0.2s ease-in-out 0s;
     background-color: rgb(227, 242, 253);
+    
+}
+.user-menu:hover{
+  transition: all 0.7s ease-in-out;
+padding: 10px;
 }

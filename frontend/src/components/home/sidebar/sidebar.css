@@ -9,16 +9,23 @@
 }
 
 .collapse-icon {
+  background-color: #e9e5e5;
  position: absolute;
     top: -7%;
-    left: 11%;
+    left: 10%;
     cursor: pointer;
     font-size: x-large;
+        transition: all 1.5s ease-in;
 }
+/* .collapse-icon:active {
+    color: #1816d1;
+    transition: all 0.5s cubic-bezier(0.47, 0, 0.75, 0.72);
+    background-color: lavender;
+} */
 .menu-sidebar {
   background-color: rgb(204, 207, 210);
   color: #0e0e0e;
-  transition: all 0.3s ease-in-out;
+      transition: all 1.5s ease-in;
 }
 .scrollbar{
   overflow-y: auto;
@@ -58,7 +65,7 @@
   height: 100%;
   background-color: rgb(204, 207, 210);
   color: #0e0e0e;
-  transition: all 0.3s ease-in-out;
+  transition: all 1.3s ease-in-out;
 }
 
 .sidebar-footer {

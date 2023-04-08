@@ -6,6 +6,7 @@ import Tableau from '../../pages/user/Tableau'
 import './home.css'
 import MenuSide from '../sidebar/MenuSide'
 import NavBar from '../header/NavBar'
+import Tpage from '../../pages/Tpage/Tpage'
 
 const { useState } = React;
 
@@ -29,7 +30,7 @@ const Home = () => {
           <Routes>
             <Route path='/' element={<TApp />} />
             <Route path='/module' element={<ModuleEssai />} />
-            <Route path='/user' element={<Tableau />} />
+            <Route path='/page' element={<Tpage />} />
           </Routes>
         </div>
       </div>

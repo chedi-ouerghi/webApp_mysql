@@ -580,6 +580,12 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
 >
       <Select
                 disabled={selectedModule !== null}
+                style={{
+                  background:'azur',
+                  color: 'black',
+                fontWeight:'500'
+                }}
+
               >
     {modules.map((module, index) => (
       <Select.Option
@@ -599,7 +605,11 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
       >
         <Input
           autoComplete="off"
-          disabled={selectedModule !== null}
+                disabled={selectedModule !== null}
+                style={{
+                  background:'#d7d7ef',
+                color: 'black'
+                }}
           onChange={e => setCodeModule(e.target.value)}
         />
       </Form.Item>

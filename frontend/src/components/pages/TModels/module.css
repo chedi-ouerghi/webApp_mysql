@@ -178,7 +178,15 @@
   color: #fff;
   width: 22%;
 }
-/* .modal_all {
+.ant-input[disabled] {
+  color: rgb(0, 0, 0);
+}
+.ant-select-selector:disabled{
+    color: black;
+    font-weight: 600;
+    background:azure;
+}
+    /* .modal_all {
   display: flex;
   flex-direction: column;
   height: 44%;

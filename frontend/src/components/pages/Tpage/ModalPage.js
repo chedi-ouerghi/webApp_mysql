@@ -1,4 +1,5 @@
-import { Form, Input, Modal, Select, message } from "antd";
+import { Form, Input, Select, message } from "antd";
+import Modal from "antd/es/modal";
 import React from "react";
 import { MdCreateNewFolder, MdEditDocument } from "react-icons/md";
 
@@ -39,6 +40,7 @@ const ModalPage = ({ page, isModalOpen, handleModalSubmit,
                             Nompage: selectedPage.Nompage
                         }}
                     >
+
                         <Form.Item
                             label={<span style={{ color: 'black' }}>Nom Application</span>}
                             name="IdApplication"
@@ -122,24 +124,25 @@ const ModalPage = ({ page, isModalOpen, handleModalSubmit,
                         >
                                     {/* {message.info(selectedPage.NomApplication)} */}
 
-                           <Select
-    disabled={selectedPage !== null}
-    style={{
-        background: 'azur',
-        color: 'black',
-        fontWeight: '500'
-    }}
+                       <Select
+  style={{
+    background: 'azur',
+    color: 'black',
+    fontWeight: '500'
+  }}
+  value={ selectedPage.IdApplication }
+//   onChange={value => setNomApplication(value)}
 >
-    {page && page.map((pages, index) => (
-        <Select.Option
-            key={`page-${index}`}
-            value={pages.IdApplication}
-        >
-            {pages.NomApplication}
-        </Select.Option>
-    ))}
+  {page && page.map((pages, index) => (
+    <Select.Option
+      key={`page-${index}`}
+      value={pages.IdApplication}
+    >
+      {pages.NomApplication}
+    </Select.Option>
+  ))}
 </Select>
-                        </Form.Item>
+</Form.Item>
                         <Form.Item
                             label={<span style={{ color: 'black' }}>Nom Module</span>}
                             name="IdModule"

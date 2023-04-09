@@ -15,79 +15,74 @@ TPage.getAll = (result) => {
   });
 };
 
-TPage.getById = (id, result) => {
-  db.query('SELECT * FROM tpage WHERE IdPage = ?', id, (err, res) => {
+TPage.getById = (db, IdApplication, IdModule, IdPage, result) => {
+  db.query('SELECT * FROM tpage WHERE IdApplication = ? AND IdModule = ? AND IdPage = ?', [IdApplication, IdModule, IdPage], (err, res) => {
     if (err) {
-      console.log('Erreur lors de la récupération de la page avec l\'IdPage', id, err);
+      console.log('Error retrieving page with IdApplication', IdApplication, 'IdModule', IdModule, 'IdPage', IdPage, err);
       result(err, null);
       return;
     }
     if (res.length) {
-      console.log('module with l\'IdPage', id, 'found successfully!');
+      console.log('Page with IdApplication', IdApplication, 'IdModule', IdModule, 'IdPage', IdPage, 'found successfully!');
       result(null, res[0]);
       return;
     }
-    result({ message: 'Page non trouvée' }, null);
+    result({ message: 'Page not found' }, null);
   });
 };
 
-TPage.create = (db, IdApplication, IdModule,page, result) => {
-  if (!db || !db.query) {
-    console.error('Erreur: Connexion à la base de données invalide');
-    result(new Error('Base de données invalide'), null);
-    return;
-  }
 
+TPage.create = (db, page, result) => {
   db.query('INSERT INTO tpage (IdApplication, IdModule, NomPage) VALUES (?, ?, ?)',
-    [IdApplication, IdModule, page.NomPage],
-    (err, res) => {
-      if (err) {
-        console.log('Erreur lors de la création de la page:', err);
-        result(err, null);
-        return;
-      }
-      console.log('Page créée avec succès!');
-      result(null, { IdPage: res.insertId, IdApplication, IdModule, ...page });
+    [page.IdApplication, page.IdModule, page.NomPage], (err, res) => {
+    if (err) {
+      console.log('Error creating page', err);
+      result(err, null);
+      return;
     }
-  );
+    console.log('Page created successfully!');
+    result(null, { IdApplication: page.IdApplication, IdModule: page.IdModule, IdPage: res.insertId, NomPage: page.NomPage });
+  });
 };
 
-TPage.update = (db, IdApplication, IdModule, id, page, result) => {
-  db.query('UPDATE tpage SET NomPage = ? WHERE IdApplication = ? AND IdModule = ? AND IdPage = ?',
-    [page.NomPage, IdApplication, IdModule, id],
-    (err, res) => {
-      if (err) {
-        console.log('Erreur lors de la mise à jour de la page avec l\'IdPage:', id, err);
-        result(err, null);
-        return;
-      }
-      if (res.affectedRows == 0) {
-        result({ message: 'Page non trouvée' }, null);
-        return;
-      }
-      console.log('Page mise à jour avec succès!');
-      result(null, { IdPage: id, IdApplication, IdModule, ...page });
+TPage.update = (db, id, page, result) => {
+  console.log('Updating page with ID:', id);
+  const query = `UPDATE tpage SET NomPage = ? WHERE IdPage = ?`;
+  db.query(query, [page.NomPage, id], (err, res) => {
+    if (err) {
+      console.log('Error updating page:',id, err);
+      result(err, null);
+      return;
     }
-  );
+
+    if (res.affectedRows == 0) {
+      console.log('Page not found');
+      result({ message: 'Page non trouvée' }, null);
+      return;
+    }
+
+    console.log('Page updated successfully');
+    result(null, { IdPage: id, ...page });
+  });
 };
 
 
-TPage.remove = (db, IdApplication, IdModule, id, result) => {
-  db.query('DELETE FROM tpage WHERE IdApplication = ? AND IdModule = ? AND IdPage = ?', 
-    [IdApplication, IdModule, id], 
-    (err, res) => {
-      if (err) {
-        console.log('Erreur lors de la suppression de la page avec l\'IdPage:', id, err);
-        result(err, null);
-        return;
-      }
-      if (res.affectedRows == 0) {
-        result({ message: 'Page non trouvée' }, null);
-        return;
-      }
-      console.log('Page supprimée avec succès!');
-      result(null, res);
+
+
+
+TPage.remove = (db,id, result) => {
+  db.query('DELETE FROM tpage WHERE  IdPage = ?', id, (err, res) => {
+    if (err) {
+      console.log('Error while deleting page with IdPage:', id, err);
+      result(err, null);
+      return;
     }
-  );
+    if (res.affectedRows == 0) {
+      result({ message: 'page not found' }, null);
+      return;
+    }
+    console.log('page deleted successfully!');
+    result(null, res);
+  });
 };
 module.exports = TPage;

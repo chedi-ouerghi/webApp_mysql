@@ -51,13 +51,11 @@ tmoduleControllers.create = (db) => (req, res) => {
   });
 };
 
-
-
 tmoduleControllers.update = (db) => (req, res) => {
   const { NomModule} = req.body || {};
   if (!NomModule ) {
     res.status(400).send({
-      message: 'NomModule and IdApplication can not be empty'
+      message: 'NomModule  can not be empty'
     });
     return;
   }
@@ -97,7 +95,6 @@ tmoduleControllers.remove = (db) => (req, res) => {
     res.send({ message: 'module deleted successfully!' });
   });
 };
-
 
 
 module.exports = tmoduleControllers;

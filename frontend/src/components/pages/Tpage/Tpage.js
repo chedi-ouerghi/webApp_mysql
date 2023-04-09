@@ -2,71 +2,67 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPage, deletePage, getpage, updatePage } from "../../api/apiPage";
 import { getApplications } from "../../api/apiApplicarion";
 import { getModules } from "../../api/apiModule";
-import { Checkbox, Form, Modal, message } from "antd";
+import { Checkbox, Form, Input, Select, message } from "antd";
+import Modal from "antd/es/modal";
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import Table from "./Table";
-import Fonctionalite from "./Fonctionalite";
+import { MdCreateNewFolder, MdEditDocument } from "react-icons/md";
 import Search from "antd/es/transfer/search";
 import { GrAdd } from "react-icons/gr";
-import ModalPage from "./ModalPage";
+// import ModalPage from "./ModalPage";
+
 
 const Tpage = () => {
 
   const [page, setPage] = useState([]); 
   const [IdPage, setIdPage] = useState([]); 
-    const [NomPage, setNomPage] = useState('');
+  const [NomPage, setNomPage] = useState('');
   const [modules, setModules] = useState([]);
   const [IdModule, setIdModule] = useState([]);
-    const [applications, setApplications] = useState([]); // Initialize the state for applications
+  const [applications, setApplications] = useState([]);
   const [IdApplication, setIdApplication] = useState('');
   const [selectedPage, setSelectedPage] = useState(null);
-const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSortAscending, setIsSortAscending] = useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
   const formRef = useRef(null);
   const [form] = Form.useForm(); // Add this line to create a form instance
-    const { confirm } = Modal;
+  const { confirm } = Modal;
 
-      // get all pages and modules and applications
-      useEffect(() => {
+  // get all pages and modules and applications
+  useEffect(() => {
     const fetchData = async () => {
       const pageData = await getpage();
       setPage(pageData);
-    //   console.log(pageData,'tttt');
-              const modulesData = await getModules();
+      const modulesData = await getModules();
       setModules(modulesData);
-    //   console.log(modulesData);
-
       const applicationsData = await getApplications();
       setApplications(applicationsData);
-      // console.log(applicationsData);
-            // setRowCount(pageData.length);
     };
     fetchData();
-      }, [page]);
+  }, [page]);
   
-     // double click to open modal edit
+  // double click to open modal edit
   const handleRowDoubleClick = (record) => {
-  console.log('handleEdit called', record);
+    console.log('handleEdit called', record);
     setSelectedPage(record);
     setIdPage(record.IdPage);
     setIdApplication(record.IdApplication);
     setIdModule(record.IdModule);
-    // message.info(record.IdApplication)
-    // message.info(record.IdModule)
-  setNomPage(record.NomPage);
-    // setNomPage(record.NomPage);
+    setNomPage(record.NomPage);
     setIsModalOpen(true);
-};
-      // ::::::::::::::
+  };
+
+
+  // ::::::::::::::
   const [selectedRowData, setSelectedRowData] = useState(null);
 
   const handleRowClick = (record) => {
     setSelectedRowData(record);
     console.log(record.IdPage,record.IdApplication,record.IdModule);
-    
   }; 
- const handleCreateClick = () => {
+
+  const handleCreateClick = () => {
     setSelectedPage(null);
     setNomPage('');
     setIsModalOpen(true);
@@ -323,15 +319,178 @@ useEffect(() => {
         handleDelete={handleDelete}
         confirm={confirm}
         /> 
-      <ModalPage
-  isModalOpen={isModalOpen}
-  handleModalSubmit={handleModalSubmit}
-  selectedPage={selectedPage}
-  setIsModalOpen={setIsModalOpen}
-  NomPage={NomPage}
-  IdApplication={IdApplication}
-  IdModule={IdModule}
-/>
+ <Modal
+  title={
+    <div style={{ color: 'darkblue' }}>
+      <span style={{ display: 'flex', alignItems: 'center' }}>
+        {selectedPage ? (
+          <MdEditDocument style={{ marginRight: '2%', color: 'black' }} />
+        ) : (
+          <MdCreateNewFolder style={{ marginRight: '2%', color: 'black' }} />
+        )}
+        <span>{selectedPage ? 'update Page' : 'Saisie Page'}</span>
+      </span>
+    </div>
+  }
+  open={isModalOpen}
+  onOk={handleModalSubmit}
+  onCancel={() => setIsModalOpen(false)}
+  okText="Enregistrer"
+  cancelText="Fermer"
+  destroyOnClose={true}
+>
+  {selectedPage && (
+    <Form
+      onFinish={handleModalSubmit}
+      ref={formRef}
+      layout="vertical"
+      style={{
+        marginBlock: '1%',
+        border: '2px solid blue',
+        padding: '10px',
+        borderRadius: '10px'
+      }}
+      
+    >
+      <Form.Item
+        label={<span style={{ color: 'black' }}>Nom Application</span>}
+        name="IdApplication"
+        initialValue={selectedPage.IdApplication}
+      >
+        <Select
+          showSearch
+          placeholder="Sélectionner une application"
+                optionFilterProp="children"
+                disabled={selectedPage !== null}
+          placement="bottom"
+          filterOption={(input, option) =>
+            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {applications.map(application => (
+            <Select.Option
+              key={application.IdApplication}
+              value={application.IdApplication}
+            >
+              {application.NomApplication}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        label={<span style={{ color: 'black' }}>Nom Module</span>}
+        name="IdModule"
+        initialValue={selectedPage.IdModule}
+      >
+              <Select
+                disabled={selectedPage !== null}
+          showSearch
+          placeholder="Sélectionner un module"
+          optionFilterProp="children"
+          placement="bottom"
+          filterOption={(input, option) =>
+            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {modules.map(module => (
+            <Select.Option
+              key={module.IdModule}
+              value={module.IdModule}
+            >
+              {module.NomModule}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        label={<span style={{ color: 'black' }}>Nom page</span>}
+        name="Nompage"
+              rules={[
+                { required: true, message: 'Le nom de la page est obligatoire' }]}
+      >
+              <Input placeholder="Saisir le nom de la page"
+              autoComplete="off"
+                  onChange={e => setNomPage(e.target.value)}
+
+              />
+      </Form.Item>
+    </Form>
+        )}
+        {!selectedPage && (
+    <Form
+      onFinish={handleModalSubmit}
+      ref={formRef}
+      layout="vertical"
+      style={{
+        marginBlock: '1%',
+        border: '2px solid blue',
+        padding: '10px',
+        borderRadius: '10px'
+      }}
+      // initialValues={{
+      //   Nompage: selectedPage.Nompage
+      // }}
+    >
+      <Form.Item
+        label={<span style={{ color: 'black' }}>Nom Application</span>}
+        name="IdApplication"
+      >
+        <Select
+          showSearch
+          placeholder="Sélectionner une application"
+          optionFilterProp="children"
+          placement="bottom"
+          filterOption={(input, option) =>
+            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {applications.map(application => (
+            <Select.Option
+              key={application.IdApplication}
+              value={application.IdApplication}
+            >
+              {application.NomApplication}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        label={<span style={{ color: 'black' }}>Nom Module</span>}
+        name="IdModule"
+      >
+        <Select
+          showSearch
+          placeholder="Sélectionner un module"
+          optionFilterProp="children"
+          placement="bottom"
+          filterOption={(input, option) =>
+            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {modules.map(module => (
+            <Select.Option
+              key={module.IdModule}
+              value={module.IdModule}
+            >
+              {module.NomModule}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        label={<span style={{ color: 'black' }}>Nom page</span>}
+        name="Nompage"
+              rules={[
+                { required: true, message: 'Le nom de la page est obligatoire' }]}
+      >
+              <Input placeholder="Saisir le nom de la page"
+                        autoComplete="off"
+        onChange={e => setNomPage(e.target.value)}
+              />
+      </Form.Item>
+    </Form>
+  )}
+</Modal>
 
       </div>
     )

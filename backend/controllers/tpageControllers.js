@@ -14,13 +14,18 @@ tpageControllers.getAll = (db) => (req, res) => {
 };
 
 tpageControllers.getById = (db) => (req, res) => {
-  TPage.getById(db, req.params.IdApplication, req.params.IdModule, req.params.IdPage, (err, result) => {
+  const id = req.params.id;
+  db.query('SELECT * FROM tpage WHERE IdPage = ?', id, (err, results) => {
     if (err) {
       console.error('Error executing query: ', err);
       res.status(500).send('Error executing query');
       return;
     }
-    res.send(result);
+    if (results.length === 0) {
+      res.status(404).send('page not found');
+      return;
+    }
+    res.send(results[0]);
   });
 };
 
@@ -46,33 +51,50 @@ tpageControllers.create = (db) => (req, res) => {
 };
 
 tpageControllers.update = (db) => (req, res) => {
-  const { IdApplication, IdModule, NomPage } = req.body;
-  if (!IdApplication || !IdModule || !NomPage) {
+  const { NomPage} = req.body || {};
+  if (!NomPage ) {
     res.status(400).send({
-      message: 'IdApplication, IdModule, and NomPage cannot be empty'
+      message: 'NomPage  can not be empty'
     });
     return;
   }
-  const page = { IdApplication, IdModule, NomPage };
-TPage.update(db, req.params.IdApplication, req.params.IdModule, req.params.IdPage, page, (err, result) => {
+  const page = { NomPage };
+  TPage.update(db, req.params.id, page, (err, data) => {
     if (err) {
-      console.error('Error executing query: ', err);
-      res.status(500).send('Error executing query');
-      return;
+      if (err.message === 'page not found') {
+        res.status(404).send({
+          message: `page with Idpage ${req.params.id} not found`
+        });
+      } else {
+        res.status(500).send({
+          message: err.message || `Error while updating page with IdPage ${req.params.id}`
+        });
+      }
+    } else {
+      res.send(data);
     }
-    res.send(result);
   });
 };
 
+
 tpageControllers.remove = (db) => (req, res) => {
-  TPage.remove(db, req.params.IdApplication, req.params.IdModule, req.params.IdPage, (err, result) => {
-    if (err) {
-      console.error('Error executing query: ', err);
-      res.status(500).send('Error executing query');
+const id = req.params.id;
+  TPage.remove(db, id, (err, result) => {
+     if (err) {
+      if (err.message === 'Page not found') {
+        res.status(404).send({
+          message: `Page with IdPage ${id} not found`
+        });
+      } else {
+        res.status(500).send({
+          message: err.message || `Error while deleting Page with IdPage ${id}`
+        });
+      }
       return;
     }
-    res.send(result);
+    res.send({ message: 'Page deleted successfully!' });
   });
 };
+
 
 module.exports = tpageControllers;

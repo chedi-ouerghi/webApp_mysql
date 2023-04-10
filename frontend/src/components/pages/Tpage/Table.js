@@ -2,7 +2,6 @@ import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-de
 import { Checkbox, Empty } from "antd";
 import React, { useState } from "react";
 import './tpage.css'
-import Pagination from "./Pagination";
 
 const Table = ({ page, currentPages,   handleRowDoubleClick,
   selectedRows, handleEdit, handleTableDeleteClick, handleRowClick,rowCount,

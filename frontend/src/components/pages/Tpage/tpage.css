@@ -1,0 +1,277 @@
+.container_user{
+    margin: 0.5% 0.5%;
+    border: 3px #1e3042 solid;
+    height: 97%;
+
+}
+
+.TApp_table{
+    width: 95%;
+    margin: 1% 2.5%;
+}
+
+.all_table{
+    width: 80%;
+    color: black;
+}
+/* 
+.ant-table table {
+    font-size: 14px;
+    border-collapse: separate;
+    border-spacing: 1px;
+    width: 100%;
+    border: 2px rgb(211, 205, 205) solid;
+    border-radius: 15px;
+} */
+
+/* .ant-table th {
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #b8b1b1;
+    /* border: 1px solid #e8e8e8; 
+    padding: 8px;
+} */
+
+/* .ant-table td {
+    text-align: center;
+    vertical-align: middle;
+    /* border: 1px solid #e8e8e8; 
+    padding: 8px;
+} */
+
+.ant-table-row:hover td {
+    background-color: #3f3d3d;
+}
+/* header */
+.header_bar {
+    display: flex;
+    justify-content: space-between;
+    /* background: linear-gradient(to bottom, #2e3192, #312b7c); */
+    background-color: #2e445a;
+    width: 100%;
+    height: 7%;
+    align-items: center;
+}
+/* actions */
+.actions_bar {
+      display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 7%;
+    width: 97%;
+    margin: 0% 1.5%;
+}
+/* searche bar  */
+.search_bar {
+    width: 60%;
+    height: 41%;
+    margin: 0% 0%;
+}
+/* buttons */
+.btn_edit_delete {
+  display: flex;
+  gap: 10%;
+  margin: 0% 0.5%;
+  justify-content: flex-end;
+  cursor: grab;
+}
+
+.btn_sup,
+.btn_mod,
+.btn_nov {
+  height: 30px;
+  /* border: 1px solid black; */
+  align-items: center;
+  border-radius: 12px;
+  display: flex;
+  width: 7%;
+  color: black;
+  font-weight: 500;
+  font-size: smaller;
+  transition: all 0.2s ease-in-out; /* Ajoute une transition pour animer les changements de style */
+}
+
+.btn_sup:hover,
+.btn_mod:hover,
+.btn_nov:hover {
+  height: 30px;
+  border: 2px solid blue;
+  align-items: center;
+  border-radius: 12px;
+  box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.15); /* Ajoute une ombre pour donner un effet de relief */
+}
+
+
+/* table row  */
+.body_table{
+  background: #fff;
+  cursor: pointer;
+}
+.body_table:hover  {
+    /* background: rgb(34 67 163 / 86%); */
+    background-color: #2e5071;
+  color: #fff;
+}
+
+/* pagination */
+.pagination {
+     display: flex;
+    justify-content: flex-start;
+    list-style: none;
+    margin: 1% 0%;
+    padding: 0;
+    /* position: fixed;
+    left: 11.5%; */
+}
+
+/* .pagination li {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  margin: 0 5px;
+  padding: 5px 10px;
+  transition: background-color 0.3s ease;
+} */
+
+.pagination.active {
+  border-color: #063465;
+  color: #000000;
+} 
+
+
+/* .pagination li span {
+  display: none;
+} */
+
+/* .pagination li:first-child,
+.pagination li:last-child {
+  padding: 5px;
+}
+
+.pagination li:first-child:hover,
+.pagination li:last-child:hover {
+  background-color: transparent;
+}
+
+.pagination li:first-child span,
+.pagination li:last-child span {
+  display: inline-block;
+}
+
+.pagination li:first-child span:before {
+  content: '\00ab';
+}
+
+.pagination li:last-child span:before {
+  content: '\00bb';
+} */
+
+/* modal  */
+.ant-modal-footer{
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 4%;
+}
+.ant-btn{
+  background-color: blue;
+  color: #fff;
+  width: 22%;
+}
+.ant-input[disabled] {
+  color: rgb(0, 0, 0);
+}
+.ant-select-selector:disabled{
+    color: black;
+    font-weight: 600;
+    background:azure;
+}
+    /* .modal_all {
+  display: flex;
+  flex-direction: column;
+  height: 44%;
+  width: 50%;
+}
+
+.modal_body {
+  flex: 1;
+  width: 100%;
+  margin: 2% 0%;
+}
+
+.modal_header {
+  background: cornflowerblue;
+}
+
+.footer_modal {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 6%;
+  margin-top: 2%;
+} */
+
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  /* .container_user {
+    margin: 1.5%;
+  } */
+  
+  .TApp_table {
+    margin: 1% 2.5%;
+  }
+  
+  .all_table {
+    width: 100%;
+  }
+  
+  /* .search_bar {
+    width: 50%;
+  } */
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  /* .container_user {
+    margin: 2%;
+  } */
+  
+  .TApp_table {
+    margin: 2%;
+  }
+  
+  .all_table {
+    width: 90%;
+  }
+  
+  /* .search_bar {
+    width: 30%;
+  } */
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  /* .container_user {
+    margin: 3%;
+  } */
+  
+  .TApp_table {
+    margin: 3%;
+  }
+  
+  .all_table {
+    width: 80%;
+  }
+/*   
+  .search_bar {
+    width: 25%;
+  } */
+}
+
+/* .ant-modal-confirm-btns .ant-btn-primary {
+  float: right;
+}
+
+.ant-modal-confirm-btns .ant-btn {
+  float: left;
+} */

@@ -622,7 +622,8 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
               rules={[{ required: true, message: "Saisir le nom du module." }]}
            // { whitespace: true, message: 'Le nom du module ne doit pas commencer par des espaces.' },        ]}
       >
-        <Input
+              <Input
+                 placeholder="Saisir le nom du module"
           autoComplete="off"
           onChange={e => setNomModule(e.target.value)}
         />

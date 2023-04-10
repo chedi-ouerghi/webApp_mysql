@@ -1,20 +1,20 @@
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
-import { Checkbox } from "antd";
-import React from "react";
+import { Checkbox, Empty } from "antd";
+import React, { useState } from "react";
+import './tpage.css'
+import Pagination from "./Pagination";
 
-const Table = ({ page,IdPage,IdModule,IdApplication,
-    setSelectedPage, setIsModalOpen, handleRowDoubleClick, handleRowClick, handleCheckboxChange }) => {
+const Table = ({ page, currentPages,   handleRowDoubleClick,
+  selectedRows, handleEdit, handleTableDeleteClick, handleRowClick,rowCount,
+  handleCheckboxChange, handleSort, setCurrentPage,  isDataAvailable }) => {    // columns of table
 
-//  console.log(page);
- 
-    // columns of table
-const columns = [
+  const columns = [
   {
     title: "",
     key: "select",
-    // render: (text, record) => (
-    //   <Checkbox checked={selectedRows.includes(record.IdModule)} />
-    // ),
+    render: (text, record) => (
+      <Checkbox checked={selectedRows.includes(record.IdModule)} />
+    ),
   },
   {
     title: "ID Application",
@@ -46,8 +46,8 @@ key: 'NomApplication',
     dataIndex: "NomPage",
     key: "NomPage",
   },
-];
-
+  ];
+ 
      return (
     <div>
       <table style={{ color: "black", borderCollapse: 'collapse', border: '2px solid black', width: '97%', margin: '0% 1.5%' }}>
@@ -55,7 +55,7 @@ key: 'NomApplication',
           <tr style={{ color: 'white', backgroundColor: '#2e445a' }}>
             {columns.map((column) => (
               <th key={column.key}
-                // onClick={() => column.sorter && handleSort(column)}
+                onClick={() => column.sorter && handleSort(column)}
                 style={{ border: '2px solid black', backgroundColor: '#2e445a', fontWeight: '400' }}
               >
                 {column.title}
@@ -66,21 +66,13 @@ key: 'NomApplication',
           </tr>
         </thead>
         <tbody>
-          {page.map((row) => (
+          {currentPages.map((row) => (
             <tr className="body_table" key={row.IdPage}
               onClick={() => { handleRowClick(row) }}
               onDoubleClick={() => handleRowDoubleClick(row)}
             >
               <td
-                style={{
-                  width: "10px",
-                  color: "black",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "smaller",
-                  margin: "0% 33%",
-                }}
+                style={{ width:'10px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%' }}
               >
                 <Checkbox
                   title="cocher la case"
@@ -166,15 +158,12 @@ key: 'NomApplication',
               justifyContent: "center",
             }}
                       >
-            <span
-              title="Modifier"
-              // onClick={() => handleEdit(page)}
-            >
-              <EditOutlined />
-            </span>
+          <span title="Modifier" onClick={() => handleEdit(row)}>
+  <EditOutlined />
+</span>
             <span
               title="Supprimer"
-              // onClick={() => handleTableDeleteClick(page.IdPage)}
+              onClick={() => handleTableDeleteClick(row.IdPage)}
             >
               <DeleteOutlined />
             </span>
@@ -184,8 +173,7 @@ key: 'NomApplication',
   ))}
 </tbody>
 
-</table>
-
+         </table>
         </div>
     )
 };

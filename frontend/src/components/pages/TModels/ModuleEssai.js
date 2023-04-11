@@ -250,7 +250,9 @@ useEffect(() => {
   } else {
     const filteredData = modules.filter(
       (module) =>
-        module.NomModule.toLowerCase().includes(searchQuery.toLowerCase())
+        module.NomModule.toLowerCase().includes(searchQuery.toLowerCase() ||
+          module.NomApplication.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        module.CodeModule.toLowerCase().includes(searchQuery.toLowerCase()))
     );
     setFilteredModules(filteredData);
     setIsDataAvailable(filteredData.length > 0);
@@ -679,7 +681,7 @@ value={application.IdApplication}
  <Form.Item
              label={
               <span style={{ color: 'black' }}>
-                Code Application
+                Code Module
               </span>
             }
             name="CodeModule"
@@ -695,7 +697,7 @@ value={application.IdApplication}
             <Form.Item
              label={
               <span style={{ color: 'black' }}>
-                Nom Application
+                Nom Module
               </span>
             }
             name="NomModule"

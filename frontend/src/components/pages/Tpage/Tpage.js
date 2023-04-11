@@ -251,6 +251,7 @@ const fetchModules = async (IdApplication) => {
     console.error(error);
   }
   };
+  
   // pagination
   const PAGE_SIZE = 5;
   const indexOfLastPage = currentPage * PAGE_SIZE;
@@ -394,7 +395,7 @@ const pageCount = Math.ceil(filteredPage.length / PAGE_SIZE);
    <div className="pagination" style={{color:'black'}}>
           <Pagination
             simple
-      // current={currentPage}
+      current={currentPage}
             pageSize={PAGE_SIZE}
       total={filteredPage.length}
       onChange={setCurrentPage}

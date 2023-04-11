@@ -7,6 +7,7 @@ import MenuSide from '../sidebar/MenuSide'
 import NavBar from '../header/NavBar'
 import Tpage from '../../pages/Tpage/Tpage'
 import Tuser from '../../pages/user/Tuser'
+import TModuleApp from '../../pages/TApp/TModuleApp'
 
 const { useState } = React;
 
@@ -32,6 +33,7 @@ const Home = () => {
             <Route path='/module' element={<ModuleEssai />} />
             <Route path='/page' element={<Tpage />} />
             <Route path='/user' element={<Tuser />} />
+            <Route path='/page2' element={<TModuleApp />} />
           </Routes>
         </div>
       </div>

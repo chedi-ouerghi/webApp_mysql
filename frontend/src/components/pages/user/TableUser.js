@@ -2,15 +2,16 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Checkbox } from "antd";
 import React from "react";
 
-const TableUser = ({user}) => {
+const TableUser = ({ filteredUser, handleSort, selectedRows
+  , handleCheckboxChange,handleRowDoubleClick,handleRowClick }) => {
 
     const columns = [
   {
     title: '',
     key: 'select',
-    // render: (text, record) => (
-    //   <Checkbox checked={selectedRows.includes(record.IdUser)} />
-    // ),
+    render: (text, record) => (
+      <Checkbox checked={selectedRows.includes(record.IdUser)} />
+    ),
   },
   {
     title: 'ID Application',
@@ -81,7 +82,7 @@ key: 'NomApplication',
           <tr style={{ color: 'white', backgroundColor: '#2e445a' }}>
             {columns.map((column) => (
               <th key={column.key}
-                // onClick={() => column.sorter && handleSort(column)}
+                onClick={() => column.sorter && handleSort(column)}
                 style={{ border: '2px solid black', backgroundColor: '#2e445a', fontWeight: '400' }}
               >
                 {column.title}
@@ -92,17 +93,17 @@ key: 'NomApplication',
           </tr>
         </thead>
         <tbody>
-          {user.map((row) => (
+          {filteredUser.map((row) => (
             <tr className="body_table" key={row.IdUser}
-            //   onClick={() => { handleRowClick(row) }}
-            //   onDoubleClick={() => handleRowDoubleClick(row)}
+              onClick={() => { handleRowClick(row) }}
+              onDoubleClick={() => handleRowDoubleClick(row)}
             >
               <td
                 style={{ width:'10px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%' }}
               >
                 <Checkbox
                   title="cocher la case"
-                //   onChange={(event) => handleCheckboxChange(row.IdPage, event.target.checked)}
+                  onChange={(event) => handleCheckboxChange(row.IdUser, event.target.checked)}
                 />
               </td>
               <td
@@ -232,7 +233,7 @@ key: 'NomApplication',
           style={{
             color: "black",
             border: "2px solid gray",
-            width: "5%",
+            // width: "5%",
             fontSize: "smaller",
             height: "30px",
           }}

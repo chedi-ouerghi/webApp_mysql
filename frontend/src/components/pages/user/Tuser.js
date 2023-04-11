@@ -7,14 +7,21 @@ import { getApplications } from "../../api/apiApplicarion";
 import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import { GrAdd } from "react-icons/gr";
 import Search from "antd/es/transfer/search";
-import { Form } from "antd";
+import { Form, Pagination } from "antd";
+import SearchBar from "./SearchBar";
 
 const Tuser = () => {
   const [user, setUser] = useState([]); 
+    const [IdUser, setIdUser] = useState([]); 
     const [page, setPage] = useState([]); 
-    const [applications, setApplications] = useState([]);
+  const [applications, setApplications] = useState([]);
+    const [IdApplication, setIdApplication] = useState('');
   const [modules, setModules] = useState([]);
+  const [IdPage, setIdPage] = useState([]); 
+  const [IdModule, setIdModule] = useState([]);
+    const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
 
   // get all pages and modules and applications
@@ -28,12 +35,124 @@ const Tuser = () => {
       setModules(modulesData);
       const applicationsData = await getApplications();
       setApplications(applicationsData);
-                  // setRowCount(userData.length);
+                  setRowCount(userData.length);
       
 
     };
     fetchData();
   }, [user]);
+
+// double click to open modal edit
+  const handleRowDoubleClick = (record) => {
+    console.log('handleEdit called', record);
+    setSelectedUser(record);
+    setIdPage(record.IdPage);
+    setIdApplication(record.IdApplication);
+    setIdModule(record.IdModule);
+    // setNomPage(record.NomPage);
+    setIsModalOpen(true);
+  };
+  const [selectedRowData, setSelectedRowData] = useState(null);
+
+  const handleRowClick = (record) => {
+    setSelectedRowData(record);
+    console.log(record.IdUser,record.IdPage,record.IdApplication,record.IdModule);
+  }; 
+
+  const handleCheckboxChange = (id, checked) => {
+  console.log(`Checkbox with id ${id} is ${checked ? 'checked' : 'unchecked'}.`);
+  setSelectedRows(rows => {
+    if (checked) {
+      return [...rows, id];
+    } else {
+      return rows.filter(row => row !== id);
+    }
+  });
+};
+
+    const [searchQuery, setSearchQuery] = useState('');
+const [filteredUser, setFilteredUser] = useState([]);
+      const [isDataAvailable, setIsDataAvailable] = useState(true);
+
+useEffect(() => {
+  if (!searchQuery) {
+    setFilteredUser(user);
+    setIsDataAvailable(true);
+  } else {
+    const filteredData = user.filter(
+      (users) =>
+        users.NomUser.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredUser(filteredData);
+    setIsDataAvailable(filteredData.length > 0);
+  }
+}, [user, searchQuery]);
+
+  const handleSearch = (value) => {
+    setSearchQuery(value);
+        
+  };
+
+  const [isSortAscending, setIsSortAscending] = useState(true);
+
+  const handleSort = (column) => {
+    setIsSortAscending(!isSortAscending);
+  };
+
+
+
+  const [currentUser, setCurrentUser] = useState(1);
+
+  // pagination
+  const PAGE_SIZE = 5;
+  const indexOfLastPage = currentUser * PAGE_SIZE;
+  const indexOfFirstPage = indexOfLastPage - PAGE_SIZE;
+  const currentPages = filteredUser.slice(indexOfFirstPage, indexOfLastPage);
+
+const pageCount = Math.ceil(filteredUser.length / PAGE_SIZE);
+
+  const renderPageNumbers = [];
+  for (let i = 1; i <= pageCount; i++) {
+    renderPageNumbers.push(
+      <li
+        key={i}
+        style={{
+          display: 'inline-block',
+          margin: '0 5px',
+          color: currentUser === i ? 'red' : 'blue',
+          cursor: 'pointer',
+        }}
+        onClick={() => setCurrentUser(i)}
+      >
+        {i}
+      </li>
+    );
+  }
+   const pageNumbers = [];
+  for (let i = 1; i <= pageCount; i++) {
+    pageNumbers.push(i);
+  }
+// fleche 
+  const handlePrevClick = () => {
+    if (currentUser > 1) {
+      setCurrentUser(currentUser - 1);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (currentUser < pageCount) {
+      setCurrentUser(currentUser + 1);
+    }
+  };
+
+  // ... fonction to calculate currentPage and renderPageNumbers
+        const [totalRowCount, setTotalRowCount] = useState(0);
+    const [rowCount, setRowCount] = useState(0);
+
+  const handleRowCount = () => {
+    setTotalRowCount(filteredUser.length);
+  };
+
   return(
       <div className='container_user'>
   <div className="header_bar">
@@ -43,15 +162,9 @@ const Tuser = () => {
         </div>
       <div className='actions_bar'>
           <div style={{ display: 'flex', gap: '10%', width: '40%', alignItems: "center" }}>
-          <Form className="search_bar">
-      <Search
-            placeholder="Rechercher"
-            title="Rechercher "
-            prefix={<SearchOutlined /> }
-            allowClear
-        // onChange={(e) => handleSearch(e.target.value)}
-      />
-        </Form>
+         
+          {/* searche barre */}
+<SearchBar handleSearch={handleSearch} />
           
         </div>
           <div className='btn_edit_delete'>
@@ -91,9 +204,37 @@ const Tuser = () => {
           )}
         </div>
       </div>
-  <div>
-    <TableUser user={user} />
-      </div>
+  
+      <TableUser filteredUser={filteredUser} selectedRows={selectedRows} handleSort={handleSort}
+        handleCheckboxChange={handleCheckboxChange} 
+  handleRowDoubleClick={handleRowDoubleClick}
+  handleRowClick={handleRowClick}
+ />
+          <div className="footer_table"
+          style={{
+            display: 'flex', justifyContent: 'space-between'
+            ,width:'100%'
+            // , position: 'fixed', width: '92%', top: '89%'
+          }}>
+       <div className="pagination" style={{color:'black'}}>
+          <Pagination
+            simple
+      current={currentUser}
+            pageSize={PAGE_SIZE}
+      total={filteredUser.length}
+      onChange={setCurrentUser}
+    />
+        </div>
+        <p style={{ color: 'black', width: '9.5%',float:'right',margin:'1% 0%' }}>
+            Nbr des lignes :
+            <span
+              // style={{ border: '2px solid blue', margin: '0% 2%' }}
+            >
+            {rowCount}
+          </span>
+          </p>
+          </div>
+      
       </div>
   )
 };

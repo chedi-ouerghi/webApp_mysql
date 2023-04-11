@@ -69,16 +69,19 @@ class SidebarMenu extends React.Component {
       onClick={this.handleClick}
     >
  <Menu.Item key="1" icon={<MailOutlined />} className="menu-item">
-            <Link to="/home">Application</Link>
+            <Link to="/home">Applications</Link>
           </Menu.Item>
           <Menu.Item key="2" icon={<AppstoreOutlined />} className="menu-item">
-            <Link to="/home/module">Module</Link>
+            <Link to="/home/module">Modules</Link>
           </Menu.Item>
           <Menu.Item key="3" icon={<SettingOutlined />} className="menu-item">
-            <Link to="/settings">Pages</Link>
+            <Link to="/home/page">Pages</Link>
           </Menu.Item>
           <Menu.Item key="4" icon={<SettingOutlined />} className="menu-item">
-            <Link to="/settings">User</Link>
+            <Link to="/home/user">Users</Link>
+              </Menu.Item>
+                <Menu.Item key="5" icon={<SettingOutlined />} className="menu-item">
+            <Link to="/home/page2">apge2</Link>
           </Menu.Item>
             
           </Menu>

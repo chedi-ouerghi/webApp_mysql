@@ -32,10 +32,12 @@ db.connect((err) => {
 const tAppRoutes = require('./routes/tAppRoutes')(db);
 const tmoduleRouter = require('./routes/tModuleRoutes')(db);
 const tPageRoutes = require('./routes/tPageRoutes')(db);
+const tUserRoutes = require('./routes/tUserRoutes')(db);
 // Routes
 app.use('/applications', tAppRoutes);
 app.use('/module', tmoduleRouter);
 app.use('/page', tPageRoutes);
+app.use('/user', tUserRoutes);
 
 
 app.listen(PORT, () => {

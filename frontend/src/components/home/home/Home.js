@@ -6,6 +6,7 @@ import './home.css'
 import MenuSide from '../sidebar/MenuSide'
 import NavBar from '../header/NavBar'
 import Tpage from '../../pages/Tpage/Tpage'
+import Tuser from '../../pages/user/Tuser'
 
 const { useState } = React;
 
@@ -30,6 +31,7 @@ const Home = () => {
             <Route path='/' element={<TApp />} />
             <Route path='/module' element={<ModuleEssai />} />
             <Route path='/page' element={<Tpage />} />
+            <Route path='/user' element={<Tuser />} />
           </Routes>
         </div>
       </div>

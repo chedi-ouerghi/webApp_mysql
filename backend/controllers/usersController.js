@@ -1,18 +1,98 @@
-// controllers/usersController.js
+const Tuser = require('../models/tuser');
 
-const { User } = require('../models');
+const tuserControllers = {};
 
-async function createUser(req, res) {
-  const { nomUser, prenomUser, email, photo, role } = req.body;
+tuserControllers.getAll = (db) => (req, res) => {
+    db.query('select * from select_user ', (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Error executing query');
+      return;
+    }
+    res.send(results);
+  });
+};
 
-  try {
-    const user = await User.create({ NomUser: nomUser, PrenomUser: prenomUser, Email: email, Photo: photo, Role: role });
+tuserControllers.getById = (db) => (req, res) => {
+  const id = req.params.id;
+  db.query('SELECT * FROM tuser WHERE IdUser = ?', id, (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Error executing query');
+      return;
+    }
+    if (results.length === 0) {
+      res.status(404).send('user not found');
+      return;
+    }
+    res.send(results[0]);
+  });
+};
 
-    res.status(201).json({ user });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'An error occurred while creating the user' });
+tuserControllers.create = (db) => (req, res) => {
+  const { IdApplication, IdModule, IdPage, IdUser, NomUser, PrenomUser, Email, Photo, Role } = req.body;
+  if (!IdApplication || !IdModule || !IdPage || !IdUser || !NomUser || !PrenomUser || !Email || !Photo || !Role ) {
+    res.status(400).send({
+      message: 'IdApplication, IdModule, and IdUser  cannot be empty'
+    });
+    return;
   }
-}
+  const user = { IdApplication, IdModule, IdPage, IdUser, NomUser, PrenomUser, Email, Photo, Role};
+  Tuser.create(db, user, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: err.message || 'Error while creating user'
+      });
+      return;
+    }
+    console.log('user created successfully!', data);
+    res.status(201).send(data);
+  });
+};
 
-module.exports = { createUser };
+tuserControllers.update = (db) => (req, res) => {
+  const { NomUser, PrenomUser, Email, Photo} = req.body || {};
+  if (!NomUser, !PrenomUser, !Email, !Photo ) {
+    res.status(400).send({
+      message: 'NomUser, PrenomUser, Email, Photo  can not be empty'
+    });
+    return;
+  }
+  const user = {  NomUser, PrenomUser, Email, Photo};
+  Tuser.update(db, req.params.id, user, (err, data) => {
+    if (err) {
+      if (err.message === 'user not found') {
+        res.status(404).send({
+          message: `user with IdUser ${req.params.id} not found`
+        });
+      } else {
+        res.status(500).send({
+          message: err.message || `Error while updating user with IdUser ${req.params.id}`
+        });
+      }
+    } else {
+      res.send(data);
+    }
+  });
+};
+
+tuserControllers.remove = (db) => (req, res) => {
+const id = req.params.id;
+  Tuser.remove(db, id, (err, result) => {
+     if (err) {
+      if (err.message === 'user not found') {
+        res.status(404).send({
+          message: `user with Iduser ${id} not found`
+        });
+      } else {
+        res.status(500).send({
+          message: err.message || `Error while deleting user with Iduser ${id}`
+        });
+      }
+      return;
+    }
+    res.send({ message: 'user deleted successfully!' });
+  });
+};
+
+module.exports = tuserControllers;

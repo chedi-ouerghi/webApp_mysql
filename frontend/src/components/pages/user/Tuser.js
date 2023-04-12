@@ -132,18 +132,6 @@ const pageCount = Math.ceil(filteredUser.length / PAGE_SIZE);
   for (let i = 1; i <= pageCount; i++) {
     pageNumbers.push(i);
   }
-// fleche 
-  const handlePrevClick = () => {
-    if (currentUser > 1) {
-      setCurrentUser(currentUser - 1);
-    }
-  };
-
-  const handleNextClick = () => {
-    if (currentUser < pageCount) {
-      setCurrentUser(currentUser + 1);
-    }
-  };
 
   // ... fonction to calculate currentPage and renderPageNumbers
         const [totalRowCount, setTotalRowCount] = useState(0);
@@ -225,8 +213,8 @@ const pageCount = Math.ceil(filteredUser.length / PAGE_SIZE);
       onChange={setCurrentUser}
     />
         </div>
-        <p style={{ color: 'black', width: '9.5%',float:'right',margin:'1% 0%' }}>
-            Nbr des lignes :
+         <p style={{ color: 'black', width: '9.5%',float:'right',margin:'1% 0%' }}>
+            NbrLig :
             <span
               // style={{ border: '2px solid blue', margin: '0% 2%' }}
             >

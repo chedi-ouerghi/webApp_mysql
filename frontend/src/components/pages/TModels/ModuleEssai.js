@@ -66,6 +66,8 @@ const [selectedRows, setSelectedRows] = useState([]);
   setCodeModule(record.CodeModule);
     setNomModule(record.NomModule);
     setIsModalOpen(true);
+          setSelectedRow((selectedRow === record.IdModule) ? null : record.IdModule);
+
 };
 
   
@@ -77,11 +79,20 @@ const handleCreateClick = () => {
   };
 
 const handleCreateModule = () => {
-  if (!IdApplication || !CodeModule || !NomModule) {
-    message.error('Veuillez remplir les champs obligatoires');
+  if (!IdApplication) {
+    message.error('Veuillez selectionner le" Nom application"');
     return;
   }
+ 
+  if (!CodeModule) {
+message.error('Veuillez remplir le champ "Code module"');
+return;
+}
 
+if (!NomModule) {
+message.error('Veuillez remplir le champ "Nom module"');
+return;
+}
   createModule({
     IdApplication: IdApplication,
     CodeModule: CodeModule,
@@ -89,7 +100,7 @@ const handleCreateModule = () => {
   })
     .then((newModule) => {
       setModules([...modules, newModule]);
-      message.success('Module a été créée avec succès.');
+        message.success('Création. succès.');
       setSelectedModule(null);
       formRef.current.resetFields(); // reset the form fields
       setIdApplication('');
@@ -97,43 +108,9 @@ const handleCreateModule = () => {
       setNomModule('');
     })
     .catch(error => {
-      message.error(`La création de module a échoué. Erreur: ${error.message}`);
+      message.error(`Création. échoué`);
     });
 };
-
-
-const handleUpdateModule = () => {
-  if (selectedModule && selectedModule.idModule === IdModule) {
-    updateModule(selectedModule.idModule, {
-      NomModule: NomModule,
-    })
-      .then(() => {
-        setModules(
-          modules.map(module => {
-            if (module.idModule === selectedModule.idModule) {
-              return { ...selectedModule, NomModule: NomModule };
-            } else {
-              return module;
-            }
-          })
-        );
-        message.success('Màj. succès.');
-        setIsModalOpen(false);
-        setSelectedModule(null);
-        setIdApplication('');
-        setCodeModule('');
-        setNomModule('');
-      })
-      .catch(error => {
-        console.error(error);
-        message.error('Màj. échoué.');
-      });
-  } else {
-    message.error('Erueur Màj.');
-  }
-  };
-
-
     // ::::::::::::::::::
 const handleModalSubmit = async () => {
   if (!selectedModule) {
@@ -151,18 +128,22 @@ const handleModalSubmit = async () => {
       NomModule: NomModule,
       IdApplication: IdApplication
     };
+    if (!NomModule) {
+message.error('Veuillez remplir le champ "Nom module"');
+return;
+}
     const response = await updateModule(selectedModule.IdModule, data);
     console.log(response);
     setIsModalOpen(false);
-    message.success('Module mis à jour avec succès!');
+    message.success('Màj. succès.');
   } catch (error) {
     console.error(error);
-    message.error('Erreur lors de la mise à jour du module');
+    message.error('Erueur Màj.');
   }
   };
   
   const handleEdit = (rowData) => {
-  // console.log('handleEdit called', rowData);
+  console.log('handleEdit called', rowData);
   if (rowData) {
     setCodeModule(rowData.CodeModule);
     setNomModule(rowData.NomModule);
@@ -178,20 +159,20 @@ const handleDelete = (id) => {
     deleteModule(id)
       .then(() => {
         setApplications(modules.filter(module => module.IdModule !== id));
-        message.success('Suppression du module réussie.');
+        message.success('Suppression.réussie.');
       })
       .catch(error => {
-        message.error('la suppression du module a echoué');
+        message.error('Suppression.échoué.');
       });
   } else {
     deleteModule(selectedRows)
       .then(() => {
         setApplications(modules.filter(module => !selectedRows.includes(module.IdModule)));
         setSelectedRows([]);
-        message.success('Suppression du module réussie.');
+        message.success('Suppression.réussie.');
       })
       .catch(error => {
-        message.error('la suppression du module a echoué.');
+        message.error('Suppression.échoué.');
       });
   }
 };
@@ -228,16 +209,35 @@ const handleOutsideDeleteClick = () => {
 
   // ::::::::::::::::
 
-  const handleCheckboxChange = (id, checked) => {
+  const [selectedRow, setSelectedRow] = useState(null);
+  
+const handleCheckboxChange = (id, checked) => {
   console.log(`Checkbox with id ${id} is ${checked ? 'checked' : 'unchecked'}.`);
-  setSelectedRows(rows => {
+  setSelectedRows((rows) => {
     if (checked) {
-      return [...rows, id];
+      // Uncheck the previously selected row
+      if (selectedRow !== null && selectedRow !== id) {
+        const updatedRows = rows.filter((row) => row !== selectedRow);
+        // Uncheck the checkbox of the previously selected row
+        const currentCheckbox = document.getElementById(selectedRow);
+        if (currentCheckbox) {
+          currentCheckbox.checked = false;
+        }
+        return [...updatedRows, id];
+      } else {
+        return [...rows, id];
+      }
     } else {
-      return rows.filter(row => row !== id);
+      // Uncheck the selected row
+      if (selectedRow === id) {
+        setSelectedRow(null);
+      }
+      return rows.filter((row) => row !== id);
     }
   });
-};
+  setSelectedRow(checked ? id : null);
+  };
+  
   const [isDataAvailable, setIsDataAvailable] = useState(true);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -250,9 +250,9 @@ useEffect(() => {
   } else {
     const filteredData = modules.filter(
       (module) =>
-        module.NomModule.toLowerCase().includes(searchQuery.toLowerCase() ||
-          module.NomApplication.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        module.CodeModule.toLowerCase().includes(searchQuery.toLowerCase()))
+        module.NomModule.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        module.NomApplication.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        module.CodeModule.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredModules(filteredData);
     setIsDataAvailable(filteredData.length > 0);
@@ -263,33 +263,13 @@ useEffect(() => {
     setSearchQuery(value);
         
 };
-
-// console.log('filteredModules:', filteredModules); // Output the value of filteredModules to the console
-// const handleSearch = (value) => {
-//   // console.log('Search query:', value); // Output the search query to the console
-//   if (!value) {
-//     setFilteredModules(modules);
-//   } else {
-//     const filteredData = modules.filter(
-//       (module) =>
-//         // module.CodeModule.toLowerCase().includes(value.toLowerCase()) ||
-//         //  module.NomApplication.toLowerCase().includes(value.toLowerCase()) ||
-//         module.NomModule.toLowerCase().includes(value.toLowerCase())
-//     );
-//     setFilteredModules(filteredData);
-//     setIsDataAvailable(filteredData.length > 0);
-//   }
-// };
-
-
-
   // ::::::::::::::
   const [selectedRowData, setSelectedRowData] = useState(null);
 
   const handleRowClick = (record) => {
     setSelectedRowData(record);
     console.log(record.IdApplication,record.IdModule);
-    
+      setSelectedRow((selectedRow === record.IdModule) ? null : record.IdModule);
   }; 
 
   // columns of table
@@ -368,26 +348,6 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
   for (let i = 1; i <= pageCount; i++) {
     pageNumbers.push(i);
   }
-// fleche 
-  const handlePrevClick = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextClick = () => {
-    if (currentPage < pageCount) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-      const [totalRowCount, setTotalRowCount] = useState(0);
-
-  // ... code to calculate currentModules and renderPageNumbers
-
-  const handleRowCount = () => {
-    setTotalRowCount(filteredModules.length);
-  };
-
 
   return (
     <div className='container_user'>
@@ -465,12 +425,19 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
       <tr className='body_table' key={module.IdModule}
         onClick={() => { handleRowClick(module) }}
         onDoubleClick={() => handleRowDoubleClick(module)} 
-        style={{ border: '2px solid gray', height: '10px' }}>
+        style={{
+          border: '2px solid gray', height: '10px',
+                     backgroundColor: module.IdModule === selectedRow ? '#add8e6' : ''
+
+        }}>
         <td
           style={{ width:'3px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%' }}
         >
           <Checkbox title="cocher la case "
-            onChange={(event) => handleCheckboxChange(module.IdModule, event.target.checked)} />
+            onChange={(event) => handleCheckboxChange(module.IdModule, event.target.checked)}
+                          checked={module.IdModule === selectedRow}
+
+          />
         </td>
         {/* <td style={{
           color: 'black', border: '2px solid gray', fontSize: 'smaller', height: '30px'
@@ -528,7 +495,7 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
     />
         </div>
         <p style={{ color: 'black', width: '9.5%',float:'right',margin:'1% 0%' }}>
-            Nbr des lignes :
+            NbrLig:
             <span
               // style={{ border: '2px solid blue', margin: '0% 2%' }}
             >
@@ -542,11 +509,9 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
 <Modal
   title={
     <div style={{ color: 'darkblue' }}>
-     <span style={{display: 'flex', alignItems: 'center'}}>
-  {selectedModule ? <MdEditDocument style={{marginRight: '2%',color: 'black'}}/> : <MdCreateNewFolder style={{marginRight: '2%',color: 'black'}}/>}
-              <span>{selectedModule ? 'update Module' : 'Saisie Module'}
-              </span>
-</span>
+      <span style={{ display: 'flex', alignItems: 'center' }}>
+        <span>{selectedModule ? 'Saisie Module' : 'Saisie Module'}</span>
+      </span>
     </div>
   }
   open={isModalOpen}
@@ -556,162 +521,86 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
   cancelText="Fermer"
   destroyOnClose={true}
 >
-  {/* Render the form only when `selectedModule` is truthy */}
-  {selectedModule && (
-    <Form
-      onFinish={handleModalSubmit}
-      ref={formRef}
-      layout="vertical"
-      style={{
-        marginBlock: '1%',
-        border: '2px solid blue',
-        padding: '10px',
-        borderRadius: '10px'
-      }}
-         initialValues={{
-        IdApplication: selectedModule.IdApplication,
-        CodeModule: selectedModule.CodeModule,
-        NomModule: selectedModule.NomModule
-      }}
+  <Form
+    onFinish={handleModalSubmit}
+    ref={formRef}
+    layout="vertical"
+    style={{
+      marginBlock: '1%',
+      border: '2px solid blue',
+      padding: '10px',
+      borderRadius: '10px'
+    }}
+    initialValues={{
+      IdApplication: selectedModule?.IdApplication,
+      CodeModule: selectedModule?.CodeModule,
+      NomModule: selectedModule?.NomModule
+    }}
+  >
+    <Form.Item
+      label={<span style={{ color: 'black' }}>Nom Application</span>}
+      name="IdApplication"
+      rules={[        {          required: !selectedModule,          message: "L'identifiant du module est obligatoire."        }      ]}
     >
-            <Form.Item
-               label={<span style={{ color: 'black' }}>
-                Nom Application
-              </span>}
-        name="IdApplication"
->
       <Select
-                disabled={selectedModule !== null}
-                style={{
-                  background:'azur',
-                  color: 'black',
-                fontWeight:'500'
-                }}
+        showSearch
+        placeholder="Sélectionner une application"
+        optionFilterProp="items"
+        placement="bottom"
+        filterOption={(input, option) =>
+          option.items.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+        onChange={value => setIdApplication(value)}
+        disabled={selectedModule !== null}
+        style={{
+          background: 'azur',
+          color: 'black',
+          fontWeight: '500'
+        }}
+      >
+        {applications.map(application => (
+          <Select.Option
+            key={application.IdApplication}
+            value={application.IdApplication}
+          >
+            {application.NomApplication}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
 
-              >
-    {modules.map((module, index) => (
-      <Select.Option
-        key={`module-${index}`}
-        value={module.IdApplication}
-      >
-        {module.NomApplication}
-      </Select.Option>
-    ))}
-  </Select>
-</Form.Item>
-      <Form.Item
-              label={<span style={{ color: 'black' }}>
-                Code Module
-              </span>}
-        name="CodeModule"
-      >
-        <Input
-          autoComplete="off"
-                disabled={selectedModule !== null}
-                style={{
-                  background:'#d7d7ef',
-                color: 'black'
-                }}
-          onChange={e => setCodeModule(e.target.value)}
-        />
-      </Form.Item>
-
-      <Form.Item
-              label={<span style={{ color: 'black' }}>
-                Nom Module
-              </span>}
-              name="NomModule"
-              rules={[{ required: true, message: "Saisir le nom du module." }]}
-           // { whitespace: true, message: 'Le nom du module ne doit pas commencer par des espaces.' },        ]}
-      >
-              <Input
-                 placeholder="Saisir le nom du module"
-          autoComplete="off"
-          onChange={e => setNomModule(e.target.value)}
-        />
-      </Form.Item>
-    </Form>
-  )}
-      {/* Render the form when `selectedModule` is falsy */}
-  {!selectedModule && (
-          <Form
-            ref={formRef}
-      layout="vertical"
-      style={{
-        marginBlock: '1%',
-        border: '2px solid blue',
-        padding: '10px',
-        borderRadius: '10px'
-      }}
+    <Form.Item
+      label={<span style={{ color: 'black' }}>Code Module</span>}
+      name="CodeModule"
+      rules={[        {          required: true,          message: 'Saisir le code du module.'        }      ]}
     >
-      <Form.Item
-         label={<span style={{ color: 'black' }}>
-                Nom Application
-              </span>}
-        name="IdApplication"
-        rules={[
-{
-required: true,
-message: "L'identifiant du module est obligatoire ."
-}
-]}
->
-<Select
-showSearch
-placeholder="Sélectionner une application"
-                optionFilterProp="items"
-                placement="bottom"
-filterOption={(input, option) =>
-option.items.toLowerCase().indexOf(input.toLowerCase()) >= 0
-}
-      onChange={value => setIdApplication(value)}
-    
->
-{/* Map over applications to create the options */}
-{applications.map(application => (
-<Select.Option
-key={application.IdApplication}
-value={application.IdApplication}
->
-{application.NomApplication}
-</Select.Option>
-))}
-</Select>
-</Form.Item>
- <Form.Item
-             label={
-              <span style={{ color: 'black' }}>
-                Code Module
-              </span>
-            }
-            name="CodeModule"
-              rules={[{ required: true, message: 'Saisir le code du module' },
-                // { whitespace: true, message: 'Le code du module ne doit pas commencer par des espaces.' },
-              ]}
-          >
-              <Input
-                autoComplete="off"
-                          // ref={CodeModuleRef}
-                value={CodeModule} onChange={(e) => setCodeModule(e.target.value)}  />
-            </Form.Item>
-            <Form.Item
-             label={
-              <span style={{ color: 'black' }}>
-                Nom Module
-              </span>
-            }
-            name="NomModule"
-              rules={[{ required: true, message: 'Saisir le nom du module.' },
-                // { whitespace: true, message: 'Le nom du module ne doit pas commencer par des espaces.' },
-              ]}
-          >
-              <Input value={NomModule}
-            autoComplete="off"
-                onChange={(e) => setNomModule(e.target.value)} />
-            </Form.Item>
-</Form>
-)}
+      <Input
+        autoComplete="off"
+        disabled={selectedModule !== null}
+        style={{
+          background: '#d7d7ef',
+          color: 'black'
+        }}
+        value={CodeModule}
+        onChange={e => setCodeModule(e.target.value)}
+      />
+    </Form.Item>
+
+    <Form.Item
+      label={<span style={{ color: 'black' }}>Nom Module</span>}
+      name="NomModule"
+      rules={[        {          required: true,          message: 'Saisir le nom du module.'        }      ]}
+    >
+      <Input
+        placeholder="Saisir le nom du module"
+        autoComplete="off"
+        value={NomModule}
+        onChange={e => setNomModule(e.target.value)}
+      />
+    </Form.Item>
+  </Form>
 </Modal>
+
         </div>
         
     )

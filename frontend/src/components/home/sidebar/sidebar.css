@@ -17,11 +17,7 @@
     font-size: x-large;
         transition: all 1.5s ease-in;
 }
-/* .collapse-icon:active {
-    color: #1816d1;
-    transition: all 0.5s cubic-bezier(0.47, 0, 0.75, 0.72);
-    background-color: lavender;
-} */
+
 .menu-sidebar {
   background-color: rgb(204, 207, 210);
   color: #0e0e0e;

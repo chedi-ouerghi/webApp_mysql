@@ -3,10 +3,11 @@ import { Checkbox, Empty } from "antd";
 import React, { useState } from "react";
 import './tpage.css'
 
-const Table = ({ page, currentPages,   handleRowDoubleClick,
-  selectedRows, handleEdit, handleTableDeleteClick, handleRowClick,rowCount,
-  handleCheckboxChange, handleSort, setCurrentPage,  isDataAvailable }) => {    // columns of table
+const Table = ({  currentPages,   handleRowDoubleClick,selectedRow,
+  selectedRows, handleEdit, handleTableDeleteClick, handleRowClick,
+  handleCheckboxChange, handleSort }) => {
 
+    // columns of table
   const columns = [
   {
     title: "",
@@ -69,13 +70,19 @@ key: 'NomApplication',
             <tr className="body_table" key={row.IdPage}
               onClick={() => { handleRowClick(row) }}
               onDoubleClick={() => handleRowDoubleClick(row)}
-            >
+             style={{
+          border: '2px solid gray', height: '10px',
+                     backgroundColor: row.IdPage === selectedRow ? '#add8e6' : ''
+
+        }}>
               <td
                 style={{ width:'10px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%' }}
               >
                 <Checkbox
                   title="cocher la case"
                   onChange={(event) => handleCheckboxChange(row.IdPage, event.target.checked)}
+                                          checked={row.IdPage === selectedRow}
+
                 />
               </td>
               <td

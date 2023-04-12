@@ -257,3 +257,8 @@
     background: whitesmoke;
     width: 20%;
 }
+
+.highlighted-row {
+  background-color: blue;
+  color: white;
+}

@@ -6,6 +6,7 @@ import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SearchOutlined
 import { GrAdd } from "react-icons/gr";
 import './tapp.css';
 import Search from 'antd/es/transfer/search';
+import { Link } from 'react-router-dom';
 
 const TApp = () => {
   const [applications, setApplications] = useState([]);
@@ -14,10 +15,9 @@ const TApp = () => {
   const [nomApplication, setNomApplication] = useState('');
   const [isSortAscending, setIsSortAscending] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState([]);
+  
 const [form] = Form.useForm(); // Add this line to create a form instance
 const formRef = useRef(null);
-
   const [rowCount, setRowCount] = useState(0);
 
  useEffect(() => {
@@ -46,15 +46,21 @@ const formRef = useRef(null);
   setSelectedApplication(record);
   setCodeApplication(record.CodeApplication);
   setNomApplication(record.NomApplication);
-  setIsModalOpen(true);
-};
+    setIsModalOpen(true);
+      setSelectedRow((selectedRow === record.IdApplication) ? null : record.IdApplication);
 
+};
   // ::::::::::::::::::
-const handleModalSubmit = () => {
-  if (!codeApplication || !nomApplication) {
-    message.error('Veuillez remplir les champs obligatoires');
-    return;
-  }
+  const handleModalSubmit = () => {
+  if (!codeApplication) {
+message.error('Veuillez remplir le champ "Code application"');
+return;
+}
+
+if (!nomApplication) {
+message.error('Veuillez remplir le champ "Nom application"');
+return;
+}
 
   if (selectedApplication) {
     updateApplication(selectedApplication.IdApplication, {
@@ -70,14 +76,14 @@ const handleModalSubmit = () => {
             }
           })
         );
-        message.success('La mise à jour de l\'application a été effectuée avec succès.');
+        message.success('Màj. succès.');
         setIsModalOpen(false);
         setSelectedApplication(null);
         setCodeApplication('');
         setNomApplication('');
       })
       .catch(error => {
-        message.error('La mise à jour de l\'application a échoué.');
+        message.error('Màj. échoué.');
       });
   } else {
     createApplication({
@@ -86,29 +92,18 @@ const handleModalSubmit = () => {
     })
       .then((newApplication) => {
         setApplications([...applications, newApplication]);
-        message.success('L\'application a été créée avec succès.');
+        message.success('Création. succès.');
         setSelectedApplication(null);
         formRef.current.resetFields(); // reset the form fields
         setCodeApplication('');
         setNomApplication('');
       })
        .catch(error => {
-        message.error(`La création de l'application a échoué. Erreur: ${'le code de l\'application est unique'}`);
+        message.error(`Création. échoué. Erreur: ${'le code de l\'application est unique'}`);
       });
   }
 };
-
-
-
- // ::::::::::::::::::
-// const handleModalClose = () => {
-//   setCodeApplication('');
-//   setNomApplication('');
-//   setIsModalOpen(false);
-// };
-
     // ::::::::::::::::::
-
   const handleCreateClick = () => {
     setSelectedApplication(null);
     setCodeApplication('');
@@ -117,7 +112,7 @@ const handleModalSubmit = () => {
   };
   // ::::::::::::::::::
   const handleEdit = (rowData) => {
-  // console.log('handleEdit called', rowData);
+  console.log('handleEdit called', rowData);
     if (rowData) {
     setCodeApplication(rowData.CodeApplication);
     setNomApplication(rowData.NomApplication);
@@ -125,55 +120,60 @@ const handleModalSubmit = () => {
   setSelectedApplication(rowData);
   setIsModalOpen(true);
 };
-
-  const handleEditClick = (application) => {
-    setSelectedApplication(application);
-    setCodeApplication(application.CodeApplication);
-    setNomApplication(application.NomApplication);
-    setIsModalOpen(true);
-  };
-
   // ::::::::::::::::::
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
+  
 const handleCheckboxChange = (id, checked) => {
   console.log(`Checkbox with id ${id} is ${checked ? 'checked' : 'unchecked'}.`);
-  setSelectedRows(rows => {
+  setSelectedRows((rows) => {
     if (checked) {
-      return [...rows, id];
+      // Uncheck the previously selected row
+      if (selectedRow !== null && selectedRow !== id) {
+        const updatedRows = rows.filter((row) => row !== selectedRow);
+        // Uncheck the checkbox of the previously selected row
+        const currentCheckbox = document.getElementById(selectedRow);
+        if (currentCheckbox) {
+          currentCheckbox.checked = false;
+        }
+        return [...updatedRows, id];
+      } else {
+        return [...rows, id];
+      }
     } else {
-      return rows.filter(row => row !== id);
+      // Uncheck the selected row
+      if (selectedRow === id) {
+        setSelectedRow(null);
+      }
+      return rows.filter((row) => row !== id);
     }
   });
+  setSelectedRow(checked ? id : null);
 };
-  // ::::::::::::::::::
 
-  // const handleRowSelectionChange = (selectedRowKeys) => {
-  //   setSelectedRows(selectedRowKeys);
-  // };
-
-  // fonction delete with confirmation
+// fonction delete with confirmation
 const handleDelete = (id) => {
   if (id) {
     deleteApplication(id)
       .then(() => {
         setApplications(applications.filter(application => application.IdApplication !== id));
-        message.success('Suppression de l\'application réussie.');
+        message.success('Suppression.réussie.');
       })
       .catch(error => {
-        message.error('Failed to delete application');
+        message.error('Suppression.échoué.');
       });
   } else {
     deleteApplication(selectedRows)
       .then(() => {
         setApplications(applications.filter(application => !selectedRows.includes(application.IdApplication)));
         setSelectedRows([]);
-        message.success('Suppression de l\'application réussie.');
+        message.success('Suppression.réussie.');
       })
       .catch(error => {
-        message.error('La suppression de l\'application a échoué.');
+        message.error('Suppression.échoué.');
       });
   }
 };
-
 // handle delete click inside table
 const handleTableDeleteClick = (id) => {
   confirm({
@@ -188,7 +188,6 @@ const handleTableDeleteClick = (id) => {
     onCancel() {},
   });
 };
-
 // handle delete click outside table
 const handleOutsideDeleteClick = () => {
   confirm({
@@ -203,16 +202,8 @@ const handleOutsideDeleteClick = () => {
     onCancel() {},
   });
 };
-
-// const dataSource = applications.map(application => {
-//   return { ...application, key: application.IdApplication, selected: false };
-// });
-  
-    // ::::::::::::::::::
-
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(true);
-
   const handleSearch = (value) => {
     if (!value) {
       setFilteredApplications(applications);
@@ -229,9 +220,11 @@ const handleOutsideDeleteClick = () => {
   // ::::::::::::::
     const [selectedRowData, setSelectedRowData] = useState(null);
 
-  const handleRowClick = (record) => {
+    const handleRowClick = (record) => {
   setSelectedRowData(record);
-  }; 
+  setSelectedRow((selectedRow === record.IdApplication) ? null : record.IdApplication);
+
+};
 
   const columns = [
     {
@@ -272,21 +265,16 @@ const handleOutsideDeleteClick = () => {
     },
      
   ];
-
   // pagination
-
   const PAGE_SIZE = 14;
   const [currentPage, setCurrentPage] = useState(1);
-
     const handleSort = (column) => {
     setIsSortAscending(!isSortAscending);
   };
   const indexOfLastApplication = currentPage * PAGE_SIZE;
   const indexOfFirstApplication = indexOfLastApplication - PAGE_SIZE;
   const currentApplications = filteredApplications.slice(indexOfFirstApplication, indexOfLastApplication);
-
   const pageCount = Math.ceil(filteredApplications.length / PAGE_SIZE);
-
   const renderPageNumbers = [];
   for (let i = 1; i <= pageCount; i++) {
     renderPageNumbers.push(
@@ -308,26 +296,6 @@ const handleOutsideDeleteClick = () => {
   for (let i = 1; i <= pageCount; i++) {
     pageNumbers.push(i);
   }
-// fleche 
-  const handlePrevClick = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextClick = () => {
-    if (currentPage < pageCount) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-      const [totalRowCount, setTotalRowCount] = useState(0);
-
-  // ... code to calculate currentApplications and renderPageNumbers
-
-  const handleRowCount = () => {
-    setTotalRowCount(filteredApplications.length);
-  };
-
 
   return (
     
@@ -350,7 +318,8 @@ const handleOutsideDeleteClick = () => {
         </Form>
         </div>
           <div className='btn_edit_delete'>
-        <span
+       {/* <Link to='/home/page2'> */}
+          <span
             className='btn_nov'
             title="Nouveau"
             onClick={handleCreateClick}
@@ -358,7 +327,8 @@ const handleOutsideDeleteClick = () => {
           >
             <GrAdd style={{ display: 'flex', alignItems: 'center', height: "100%", margin: '0% 1%' }} />
             Nouveau
-          </span>
+            </span>
+            {/* </Link> */}
         {selectedRows.length === 1 && (
         <>
        <span
@@ -405,12 +375,18 @@ const handleOutsideDeleteClick = () => {
           <tr className='body_table' key={application.IdApplication}
             onClick={() => { handleRowClick(application) }}
             onDoubleClick={() => handleRowDoubleClick(application)}
-            style={{ border: '2px solid gray', height: '10px' }}>
+            style={{
+              border: '2px solid gray', height: '10px',
+             backgroundColor: application.IdApplication === selectedRow ? '#add8e6' : ''
+            }}>
             <td
               style={{width:'6px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%'  }}
             >
-              <Checkbox title="cocher la case "
-                onChange={(event) => handleCheckboxChange(application.IdApplication, event.target.checked)} />
+              <Checkbox
+                title="cocher la case"
+                onChange={(event) => handleCheckboxChange(application.IdApplication, event.target.checked)}
+                checked={application.IdApplication === selectedRow}
+              />
             </td>
             {/* <td style={{ padding: '10px', color: 'black', border: '2px solid gray' }}>{application.IdApplication}</td> */}
             <td style={{  color: 'black', border: '2px solid gray',fontSize:'smaller',height:'30px' }}>{application.CodeApplication}</td>
@@ -449,21 +425,19 @@ const handleOutsideDeleteClick = () => {
     />
         </div>
         <p style={{ color: 'black', width: '9.5%',float:'right',margin:'1% 0%' }}>
-            Nbr des lignes :
-            <span
-              // style={{ border: '2px solid blue', margin: '0% 2%' }}
-            >
+            NbrLig :
+            <span >
             {rowCount}
           </span>
           </p>
           </div>
       </div>
       
-     <Modal 
+  <Modal 
   title={
     <div style={{color:"darkblue"}}>
     <span >
-      {selectedApplication ? 'Edit Application' : 'Create Application'}
+      {selectedApplication ? 'Saisie Application' : 'Saisie Application'}
     </span>
     </div>} 
  open={isModalOpen} 
@@ -473,78 +447,57 @@ const handleOutsideDeleteClick = () => {
         cancelText="Fermer"
         destroyOnClose={true}
       >
-        {selectedApplication && (
-          <Form layout="vertical"
-                style={{ marginBlock: '1%', border: '2px solid blue', padding: "10px", borderRadius: '10px' }} 
-          >
-     <Form.Item
-      label={
-        <span style={{ color: 'black'}}>
-          Code Application
-        </span>
-      }>
-              <Input value={codeApplication}
-            autoComplete="off"
-                disabled={selectedApplication !== null}
-                onChange={(e) => setCodeApplication(e.target.value)} />
-      </Form.Item>
+        <Form layout="vertical"
+              ref={formRef}
+              style={{ marginBlock: '1%', border: '2px solid blue', padding: "10px", borderRadius: '10px' }} 
+        >
             <Form.Item
-             label={
-              <span style={{ color: 'black' }}>
-                Nom Application
-              </span>
-            }
-              rules={[{ required: true, message: 'Saisir le nom de l\'application.' },
-                // { whitespace: true, message: 'Le nom de l\'application ne doit pas commencer par des espaces.' },
-              ]}
-          >
-            
-              <Input value={nomApplication}
-            autoComplete="off"
-                onChange={(e) => setNomApplication(e.target.value)} />
-      </Form.Item>
-          </Form>
-          )}
-        {!selectedApplication && (
-          <Form layout="vertical"
-            ref={formRef}
-            style={{ marginBlock: '1%', border: '2px solid blue', padding: "10px", borderRadius: '10px' }} 
-          >
-            <Form.Item
-             label={
-              <span style={{ color: 'black' }}>
-                Code Application
-              </span>
-            }
-            name="codeApplication"
-              rules={[{ required: true, message: 'Saisir le code de l\'application.' },
-                // { whitespace: true, message: 'Le code de l\'application ne doit pas commencer par des espaces.' },
-              ]}
-          >
-              <Input
-                autoComplete="off"
-                          // ref={codeApplicationRef}
-                value={codeApplication} onChange={(e) => setCodeApplication(e.target.value)}  />
+                label={
+                  <span style={{ color: 'black'}}>
+                    Code Application
+                  </span>
+                }>
+                <Input value={codeApplication}
+                      autoComplete="off"
+                      disabled={selectedApplication !== null}
+                      onChange={(e) => setCodeApplication(e.target.value)} />
             </Form.Item>
-            <Form.Item
-             label={
-              <span style={{ color: 'black' }}>
-                Nom Application
-              </span>
-            }
-            name="nomApplication"
+            {selectedApplication ? (
+              <Form.Item
+                  label={
+                    <span style={{ color: 'black' }}>
+                      Nom Application
+                    </span>
+                  }
+                  name="nomApplication"
               rules={[{ required: true, message: 'Saisir le nom de l\'application.' },
-                // { whitespace: true, message: 'Le nom de l\'application ne doit pas commencer par des espaces.' },
+                // { whitespace: true, message: 'Le nom de l\'application ne doit pas commencer par des espaces.' },     
               ]}
-          >
-              <Input value={nomApplication}
-            autoComplete="off"
-                onChange={(e) => setNomApplication(e.target.value)} />
-            </Form.Item>
-          </Form>
-        )}
-      
+              >
+                  <Input value={nomApplication}
+                        autoComplete="off"
+                        onChange={(e) => setNomApplication(e.target.value)} />
+              </Form.Item>
+            ) : (
+              <Form.Item
+                  label={
+                    <span style={{ color: 'black' }}>
+                      Nom Application
+                    </span>
+                  }
+                  name="nomApplication"
+                rules={[{ required: true, message: 'Saisir le nom de l\'application.' },
+                  // { whitespace: true, message: 'Le nom de l\'application ne doit pas commencer par des espaces.' },          
+                ]}
+              >
+                  <Input value={nomApplication}
+                        autoComplete="off"
+                        onChange={(e) => setNomApplication(e.target.value)} />
+              </Form.Item>
+            )}
+        </Form>
 </Modal>
+
 </div>
   )
 };

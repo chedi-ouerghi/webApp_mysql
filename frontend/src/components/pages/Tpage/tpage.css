@@ -275,3 +275,12 @@
 .ant-modal-confirm-btns .ant-btn {
   float: left;
 } */
+.ant-modal-confirm-btns {
+  display: flex;
+  justify-content:flex-start;
+  flex-direction: row-reverse;
+}
+
+.ant-modal-confirm-btns button + button {
+  margin-left: 8px;
+}

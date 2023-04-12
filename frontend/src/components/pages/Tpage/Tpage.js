@@ -304,6 +304,8 @@ const fetchModules = async (IdApplication) => {
     console.error(error);
   }
   };
+ 
+  
   
   // pagination
   const PAGE_SIZE = 14;

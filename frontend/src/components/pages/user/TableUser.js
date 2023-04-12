@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Checkbox } from "antd";
 import React from "react";
 
-const TableUser = ({ filteredUser, handleSort, selectedRows
+const TableUser = ({ filteredUser, handleSort, selectedRows,selectedRow
   , handleCheckboxChange,handleRowDoubleClick,handleRowClick }) => {
 
     const columns = [
@@ -97,6 +97,11 @@ key: 'NomApplication',
             <tr className="body_table" key={row.IdUser}
               onClick={() => { handleRowClick(row) }}
               onDoubleClick={() => handleRowDoubleClick(row)}
+                 style={{
+          border: '2px solid gray', height: '10px',
+                     backgroundColor: row.IdUser === selectedRow ? '#add8e6' : ''
+
+        }}
             >
               <td
                 style={{ width:'10px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%' }}

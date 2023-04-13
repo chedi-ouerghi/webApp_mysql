@@ -9,38 +9,38 @@ const Table = ({  currentPages,   handleRowDoubleClick,selectedRow,
 
     // columns of table
   const columns = [
-  {
-    title: "",
-    key: "select",
-    render: (text, record) => (
-      <Checkbox checked={selectedRows.includes(record.IdModule)} />
-    ),
-  },
-  {
-    title: "ID Application",
-    dataIndex: "IdApplication",
-    key: "IdApplication",
-    },
+  // {
+  //   title: "",
+  //   key: "select",
+  //   render: (text, record) => (
+  //     <Checkbox checked={selectedRows.includes(record.IdModule)} />
+  //   ),
+  // },
+  // {
+  //   title: "ID Application",
+  //   dataIndex: "IdApplication",
+  //   key: "IdApplication",
+  //   },
    {
 title: 'NomApplication',
     dataIndex: 'NomApplication' ,
 key: 'NomApplication',
 },
-  {
-    title: "ID Module",
-    dataIndex: "IdModule",
-    key: "IdModule",
-    },
+  // {
+  //   title: "ID Module",
+  //   dataIndex: "IdModule",
+  //   key: "IdModule",
+  //   },
     {
         title: 'Nom Module',
         dataIndex: 'NomModule',
         key: 'NomModule',
     },
-  {
-    title: "ID Page",
-    dataIndex: "IdPage",
-    key: "IdPage",
-  },
+  // {
+  //   title: "ID Page",
+  //   dataIndex: "IdPage",
+  //   key: "IdPage",
+  // },
   {
     title: "Nom de la page",
     dataIndex: "NomPage",
@@ -62,7 +62,6 @@ key: 'NomApplication',
               </th>
             ))}
              <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th>
-
           </tr>
         </thead>
         <tbody>
@@ -75,7 +74,7 @@ key: 'NomApplication',
                      backgroundColor: row.IdPage === selectedRow ? '#add8e6' : ''
 
         }}>
-              <td
+              {/* <td
                 style={{ width:'10px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%' }}
               >
                 <Checkbox
@@ -84,8 +83,8 @@ key: 'NomApplication',
                                           checked={row.IdPage === selectedRow}
 
                 />
-              </td>
-              <td
+              </td> */}
+              {/* <td
                 style={{
                   color: "black",
                   border: "2px solid gray",
@@ -94,7 +93,7 @@ key: 'NomApplication',
                 }}
               >
                 {row.IdApplication}
-              </td>
+              </td> */}
               <td
                 style={{
                   color: "black",
@@ -105,7 +104,7 @@ key: 'NomApplication',
         >
           {row.NomApplication}
         </td>
-        <td
+        {/* <td
           style={{
             color: "black",
             border: "2px solid gray",
@@ -115,7 +114,7 @@ key: 'NomApplication',
           }}
         >
           {row.IdModule}
-        </td>
+        </td> */}
         <td
           style={{
             color: "black",
@@ -127,7 +126,7 @@ key: 'NomApplication',
         >
           {row.NomModule}
         </td>
-        <td
+        {/* <td
           style={{
             color: "black",
             border: "2px solid gray",
@@ -137,7 +136,7 @@ key: 'NomApplication',
           }}
         >
           {row.IdPage}
-        </td>
+        </td> */}
         <td
           style={{
             color: "black",

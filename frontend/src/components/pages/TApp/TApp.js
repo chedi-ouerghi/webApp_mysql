@@ -104,22 +104,23 @@ return;
   }
 };
     // ::::::::::::::::::
-  const handleCreateClick = () => {
-    setSelectedApplication(null);
-    setCodeApplication('');
-    setNomApplication('');
-    setIsModalOpen(true);
-  };
+const handleCreateClick = () => {
+  setSelectedApplication(null);
+  setCodeApplication('');
+  setNomApplication('');
+  setIsModalOpen(true);
+};
+
   // ::::::::::::::::::
-  const handleEdit = (rowData) => {
-  console.log('handleEdit called', rowData);
-    if (rowData) {
+const handleEdit = (rowData) => {
+  if (rowData) {
     setCodeApplication(rowData.CodeApplication);
     setNomApplication(rowData.NomApplication);
   }
   setSelectedApplication(rowData);
   setIsModalOpen(true);
 };
+
   // ::::::::::::::::::
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -227,11 +228,11 @@ const handleOutsideDeleteClick = () => {
 };
 
   const columns = [
-    {
-      title: '',
-      key: 'select',
-      render: (text) => <Checkbox />,
-    },
+    // {
+    //   title: '',
+    //   key: 'select',
+    //   render: (text) => <Checkbox />,
+    // },
     // {
     //   title: 'IDApplication',
     //   dataIndex: 'IdApplication',
@@ -335,7 +336,7 @@ const handleOutsideDeleteClick = () => {
   className='btn_mod'
   style={{ width: '50%', color: 'black', fontWeight: '500', fontSize: 'smaller' }}
   onClick={() => handleEdit(selectedRowData)} 
-  title="modifier"
+  title="modifier" 
   icon={<EditOutlined style={{ color: 'black' }} />}
   disabled={selectedRows.length !== 1}
 >
@@ -379,15 +380,15 @@ const handleOutsideDeleteClick = () => {
               border: '2px solid gray', height: '10px',
              backgroundColor: application.IdApplication === selectedRow ? '#add8e6' : ''
             }}>
-            <td
+            {/* <td
               style={{width:'6px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%'  }}
-            >
-              <Checkbox
+            > */}
+              {/* <Checkbox
                 title="cocher la case"
                 onChange={(event) => handleCheckboxChange(application.IdApplication, event.target.checked)}
                 checked={application.IdApplication === selectedRow}
-              />
-            </td>
+              /> */}
+            {/* </td> */}
             {/* <td style={{ padding: '10px', color: 'black', border: '2px solid gray' }}>{application.IdApplication}</td> */}
             <td style={{  color: 'black', border: '2px solid gray',fontSize:'smaller',height:'30px' }}>{application.CodeApplication}</td>
             <td style={{  color: 'black', border: '2px solid gray',fontSize:'smaller',height:'30px' }}>{application.NomApplication}</td>
@@ -433,69 +434,68 @@ const handleOutsideDeleteClick = () => {
           </div>
       </div>
       
-  <Modal 
+<Modal 
   title={
     <div style={{color:"darkblue"}}>
-    <span >
-      {selectedApplication ? 'Saisie Application' : 'Saisie Application'}
-    </span>
-    </div>} 
- open={isModalOpen} 
- onOk={handleModalSubmit} 
- onCancel={() => setIsModalOpen(false)}
-          okText="Enregistrer"
-        cancelText="Fermer"
-        destroyOnClose={true}
-      >
-        <Form layout="vertical"
-              ref={formRef}
-              style={{ marginBlock: '1%', border: '2px solid blue', padding: "10px", borderRadius: '10px' }} 
-        >
-            <Form.Item
-                label={
-                  <span style={{ color: 'black'}}>
-                    Code Application
-                  </span>
-                }>
-                <Input value={codeApplication}
-                      autoComplete="off"
-                      disabled={selectedApplication !== null}
-                      onChange={(e) => setCodeApplication(e.target.value)} />
-            </Form.Item>
-            {selectedApplication ? (
-              <Form.Item
-                  label={
-                    <span style={{ color: 'black' }}>
-                      Nom Application
-                    </span>
-                  }
-                  name="nomApplication"
-              rules={[{ required: true, message: 'Saisir le nom de l\'application.' },
-                // { whitespace: true, message: 'Le nom de l\'application ne doit pas commencer par des espaces.' },     
-              ]}
-              >
-                  <Input value={nomApplication}
-                        autoComplete="off"
-                        onChange={(e) => setNomApplication(e.target.value)} />
-              </Form.Item>
-            ) : (
-              <Form.Item
-                  label={
-                    <span style={{ color: 'black' }}>
-                      Nom Application
-                    </span>
-                  }
-                  name="nomApplication"
-                rules={[{ required: true, message: 'Saisir le nom de l\'application.' },
-                  // { whitespace: true, message: 'Le nom de l\'application ne doit pas commencer par des espaces.' },          
-                ]}
-              >
-                  <Input value={nomApplication}
-                        autoComplete="off"
-                        onChange={(e) => setNomApplication(e.target.value)} />
-              </Form.Item>
-            )}
-        </Form>
+      <span>
+        {selectedApplication ? 'Modifier Application' : 'Saisie Application'}
+      </span>
+    </div>
+  } 
+  open={isModalOpen} 
+  onOk={handleModalSubmit} 
+  onCancel={() => setIsModalOpen(false)}
+  okText="Enregistrer"
+  cancelText="Fermer"
+  destroyOnClose={true}
+>
+  <Form
+  layout="vertical"
+  ref={formRef}
+  style={{ marginBlock: '1%', border: '2px solid blue', padding: "10px", borderRadius: '10px' }}
+  initialValues={{
+    codeApplication: selectedApplication ? selectedApplication.CodeApplication : '',
+    nomApplication: selectedApplication ? selectedApplication.NomApplication : '',
+  }}
+  onFinish={handleModalSubmit}
+>
+  <Form.Item
+    label={
+      <span style={{ color: 'black'}}>
+        Code Application
+      </span>
+    }
+    name="codeApplication"
+            rules={[{ required: true, message: 'Saisir le code de l\'application.' },
+              // { whitespace: true, message: 'Le code de l\'application ne doit pas commencer par des espaces.' },  
+            ]}
+  >
+    <Input 
+      autoComplete="off"
+      style={{ color: 'black'}}
+      disabled={selectedApplication !== null}
+      onChange={(e) => setCodeApplication(e.target.value)} 
+    />
+  </Form.Item>
+  <Form.Item
+    label={
+      <span style={{ color: 'black' }}>
+        Nom Application
+      </span>
+    }
+    name="nomApplication"
+          rules={[{ required: true, message: 'Saisir le nom de l\'application.' },
+            // { whitespace: true, message: 'Le nom de l\'application ne doit pas commencer par des espaces.' },   
+          ]}
+  >
+    <Input 
+      autoComplete="off"
+      style={{ color: 'black'}}
+      onChange={(e) => setNomApplication(e.target.value)} 
+    />
+  </Form.Item>
+</Form>
+
 </Modal>
 
 </div>

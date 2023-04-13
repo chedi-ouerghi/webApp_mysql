@@ -37,7 +37,17 @@ setPhoto,setPrenomUser,setRole,setEmail,IdApplication,IdModule ,IdPage}
       border: '2px solid blue',
       padding: '10px',
       borderRadius: '10px'
-    }}
+            }}
+             initialValues={{
+            IdApplication: selectedUser?.IdApplication || IdApplication,
+            IdModule: selectedUser?.IdModule || IdModule,
+            IdPage: selectedUser?.IdPage || IdPage,
+            NomUser: selectedUser?.NomUser || NomUser,
+            PrenomUser: selectedUser?.PrenomUser || PrenomUser,
+            Email: selectedUser?.Email || Email,
+            Photo: selectedUser?.Photo || Photo,
+            Role: selectedUser?.Role || Role,
+          }}
   >
     <Form.Item
       label={<span style={{ color: 'black' }}>Nom Application</span>}
@@ -90,7 +100,33 @@ value={application.IdApplication}
           </Select.Option>
         ))}
       </Select>
-       </Form.Item>
+            </Form.Item>
+       <Form.Item
+label={<span style={{ color: "black" }}>Nom Page</span>}
+name="IdPage"
+initialValue={selectedUser?.IdPage || IdPage}
+>
+<Select
+showSearch
+placeholder="Sélectionner une page"
+          optionFilterProp="children"
+          disabled={selectedUser !== null}
+placement="bottom"
+filterOption={(input, option) =>
+option.children
+.toLowerCase()
+.indexOf(input.toLowerCase()) >= 0
+}
+onChange={(value) => setIdPage(value)}
+>
+{page &&
+page.map((pages) => (
+<Select.Option key={pages.IdPage} value={pages.IdPage}>
+{pages.NomPage}
+</Select.Option>
+))}
+</Select>
+</Form.Item>
     <Form.Item
       label={<span style={{ color: 'black' }}>Nom User</span>}
       name="NomUser"

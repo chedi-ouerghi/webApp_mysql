@@ -274,15 +274,15 @@ useEffect(() => {
 
   // columns of table
 const columns = [
-  {
-    title: '',
-    key: 'select',
-    render: (text, record) => (
-      <Checkbox
-        checked={selectedRows.includes(record.IdModule)}
-      />
-    ),
-  },
+  // {
+  //   title: '',
+  //   key: 'select',
+  //   render: (text, record) => (
+  //     <Checkbox
+  //       checked={selectedRows.includes(record.IdModule)}
+  //     />
+  //   ),
+  // },
   //  {
   //    title: 'idApp',
   //        dataIndex: 'IdApplication' ,
@@ -430,15 +430,15 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
                      backgroundColor: module.IdModule === selectedRow ? '#add8e6' : ''
 
         }}>
-        <td
+        {/* <td
           style={{ width:'3px', color: 'black',  display: 'flex', alignItems: 'center', justifyContent: 'center',fontSize:'smaller',margin:'0% 33%' }}
-        >
-          <Checkbox title="cocher la case "
+        > */}
+          {/* <Checkbox title="cocher la case "
             onChange={(event) => handleCheckboxChange(module.IdModule, event.target.checked)}
                           checked={module.IdModule === selectedRow}
 
-          />
-        </td>
+          /> */}
+        {/* </td> */}
         {/* <td style={{
           color: 'black', border: '2px solid gray', fontSize: 'smaller', height: '30px'
         }}>{module.IdApplication}</td> */}
@@ -540,7 +540,8 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
     <Form.Item
       label={<span style={{ color: 'black' }}>Nom Application</span>}
       name="IdApplication"
-      rules={[        {          required: !selectedModule,          message: "L'identifiant du module est obligatoire."        }      ]}
+            rules={[
+              { required: !selectedModule, message: "L'identifiant du module est obligatoire." }]}
     >
       <Select
         showSearch

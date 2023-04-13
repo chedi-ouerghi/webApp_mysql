@@ -158,6 +158,9 @@ const handleModalSubmit = async () => {
     if (IdApplication) {
       await fetchModules(IdApplication);
     }
+    if (IdModule) {
+      await fetchPages(IdModule);
+    }
     
     // Call the API to update the page
     const data = {
@@ -368,7 +371,22 @@ const fetchModules = async (IdApplication) => {
     console.error(error);
   }
   };
-  
+  const handleApplicationChange = (value) => {
+  setIdApplication(value);
+  setIdModule(null);
+  setIdPage(null);
+  const selectedApplication = applications.find(
+    (application) => application.IdApplication === value
+  );
+  if (selectedApplication) {
+    setModules(selectedApplication.Modules);
+  } else {
+    setModules([]);
+  }
+  setPage([]);
+};
+
+
 
   const [currentUser, setCurrentUser] = useState(1);
 

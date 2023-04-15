@@ -315,7 +315,7 @@ sortDirections: ['ascend', 'descend', 'ascend'],
 
   // pagination
 
-  const PAGE_SIZE = 14;
+  const PAGE_SIZE = 13;
   const [currentPage, setCurrentPage] = useState(1);
 
     const handleSort = (column) => {

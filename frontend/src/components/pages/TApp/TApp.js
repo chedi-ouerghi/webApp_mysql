@@ -20,24 +20,21 @@ const [form] = Form.useForm(); // Add this line to create a form instance
 const formRef = useRef(null);
   const [rowCount, setRowCount] = useState(0);
 
- useEffect(() => {
-    const fetchData = async () => {
-      const data = await getApplications();
-      setApplications(data);
-      setRowCount(data.length);
-    };
-    fetchData();
- }, []);
+useEffect(() => {
+  const fetchData = async () => {
+    const data = await getApplications();
+    setApplications(data);
+  };
 
-  useEffect(() => {
-    setRowCount(applications.length);
-  }, [applications]);
+  fetchData();
+}, []);
 
+useEffect(() => {
+  setRowCount(applications.length);
+  setFilteredApplications(applications);
+}, [applications]);
   
-  useEffect(() => {
-    setFilteredApplications(applications);
-  }, [applications]);
- 
+
   
     const { confirm } = Modal ;
 
@@ -113,12 +110,18 @@ const handleCreateClick = () => {
 
   // ::::::::::::::::::
 const handleEdit = (rowData) => {
-  if (rowData) {
-    setCodeApplication(rowData.CodeApplication);
-    setNomApplication(rowData.NomApplication);
+  if (selectedRowData) {
+    if (rowData) {
+      setCodeApplication(rowData.CodeApplication);
+      setNomApplication(rowData.NomApplication);
+      setIsModalOpen(true);
+    } else {
+      message.info('Sélectionnez une ligne à modifier');
+    }
+    setSelectedApplication(rowData);
+  } else {
+    message.info('Sélectionnez une ligne à modifier');
   }
-  setSelectedApplication(rowData);
-  setIsModalOpen(true);
 };
 
   // ::::::::::::::::::
@@ -153,44 +156,27 @@ const handleCheckboxChange = (id, checked) => {
 };
 
 // fonction delete with confirmation
-const handleDelete = (id) => {
-  if (id) {
-    deleteApplication(id)
-      .then(() => {
-        setApplications(applications.filter(application => application.IdApplication !== id));
-        message.success('Suppression.réussie.');
-      })
-      .catch(error => {
-        message.error('Suppression.échoué.');
-      });
-  } else {
-    deleteApplication(selectedRows)
-      .then(() => {
-        setApplications(applications.filter(application => !selectedRows.includes(application.IdApplication)));
-        setSelectedRows([]);
-        message.success('Suppression.réussie.');
-      })
-      .catch(error => {
-        message.error('Suppression.échoué.');
-      });
-  }
+const handleDelete = (rowData) => {
+  deleteApplication(rowData.IdApplication)
+    .then(() => {
+      setApplications(applications.filter(application => application.IdApplication !== rowData.IdApplication));
+      setSelectedRows([]);
+      setSelectedRowData(null);
+      message.success('Suppression réussie.');
+    })
+    .catch(error => {
+      message.error('Suppression échouée.');
+    });
 };
-// handle delete click inside table
-const handleTableDeleteClick = (id) => {
-  confirm({
-    title: 'Voulez-vous supprimer la ligne?',
-    icon: <ExclamationCircleOutlined />,
-    cancelText: 'Non',
-    okText: 'Oui',
-    okType: 'danger',
-    onOk() {
-      handleDelete(id);
-    },
-    onCancel() {},
-  });
-};
+
+
 // handle delete click outside table
 const handleOutsideDeleteClick = () => {
+  if (!selectedRowData) {
+    message.info('Sélectionnez une ligne à supprimer');
+    return;
+  }
+  
   confirm({
     title: 'Voulez-vous supprimer la ligne?',
     icon: <ExclamationCircleOutlined />,
@@ -198,11 +184,14 @@ const handleOutsideDeleteClick = () => {
     okType: 'danger',
     cancelText: 'Non',
     onOk() {
-      handleDelete();
+      handleDelete(selectedRowData); // pass rowData object instead of selectedRowData.IdApplication
     },
     onCancel() {},
   });
 };
+
+
+
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(true);
   const handleSearch = (value) => {
@@ -221,9 +210,15 @@ const handleOutsideDeleteClick = () => {
   // ::::::::::::::
     const [selectedRowData, setSelectedRowData] = useState(null);
 
-    const handleRowClick = (record) => {
-  setSelectedRowData(record);
-  setSelectedRow((selectedRow === record.IdApplication) ? null : record.IdApplication);
+  const handleRowClick = (record) => {
+  if (selectedRow === record.IdApplication) {
+    setSelectedRow(null);
+    setSelectedRowData(null);
+  } else {
+    setSelectedRow(record.IdApplication);
+    setSelectedRowData(record);
+    }
+      message.info((selectedRow === record.IdApplication) ? null : record.IdApplication)
 
 };
 
@@ -267,7 +262,7 @@ const handleOutsideDeleteClick = () => {
      
   ];
   // pagination
-  const PAGE_SIZE = 14;
+  const PAGE_SIZE = 13;
   const [currentPage, setCurrentPage] = useState(1);
     const handleSort = (column) => {
     setIsSortAscending(!isSortAscending);
@@ -330,31 +325,28 @@ const handleOutsideDeleteClick = () => {
             Nouveau
             </span>
             {/* </Link> */}
-        {selectedRows.length === 1 && (
-        <>
-       <span
-  className='btn_mod'
-  style={{ width: '50%', color: 'black', fontWeight: '500', fontSize: 'smaller' }}
-  onClick={() => handleEdit(selectedRowData)} 
-  title="modifier" 
-  icon={<EditOutlined style={{ color: 'black' }} />}
-  disabled={selectedRows.length !== 1}
->
-  Modifier
-</span>
+      <span
+      className='btn_mod'
+      style={{ width: '50%', color: 'black', fontWeight: '500', fontSize: 'smaller' }}
+      onClick={() => handleEdit(selectedRowData)} 
+      title="modifier" 
+      icon={<EditOutlined style={{ color: 'black' }} />}
+      disabled={!selectedRowData}
+    >
+      Modifier
+    </span>
+
           <span
             className='btn_sup'
             style={{ width: '50%', color: 'black', fontWeight: '500', fontSize: 'smaller' }}
             danger
             title="Supprimer"
-            disabled={selectedRows.length !== 1}
-            onClick={handleOutsideDeleteClick}
+            // disabled={selectedRow.length !== 1}
+onClick={() => handleOutsideDeleteClick(selectedRowData)}
             icon={<DeleteOutlined />}
           >
             Supprimer
           </span>
-        </>
-          )}
           </div>
           
     </div>
@@ -368,7 +360,7 @@ const handleOutsideDeleteClick = () => {
         {column.title}
       </th>
     ))}
-    <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th>
+    {/* <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th> */}
   </tr>
 </thead>
       <tbody >
@@ -376,6 +368,7 @@ const handleOutsideDeleteClick = () => {
           <tr className='body_table' key={application.IdApplication}
             onClick={() => { handleRowClick(application) }}
             onDoubleClick={() => handleRowDoubleClick(application)}
+            
             style={{
               border: '2px solid gray', height: '10px',
              backgroundColor: application.IdApplication === selectedRow ? '#add8e6' : ''
@@ -392,12 +385,12 @@ const handleOutsideDeleteClick = () => {
             {/* <td style={{ padding: '10px', color: 'black', border: '2px solid gray' }}>{application.IdApplication}</td> */}
             <td style={{  color: 'black', border: '2px solid gray',fontSize:'smaller',height:'30px' }}>{application.CodeApplication}</td>
             <td style={{  color: 'black', border: '2px solid gray',fontSize:'smaller',height:'30px' }}>{application.NomApplication}</td>
-            <td style={{  color: 'black', border: '2px solid gray', width:'5%',fontSize:'smaller',height:'30px' }}>
+            {/* <td style={{  color: 'black', border: '2px solid gray', width:'5%',fontSize:'smaller',height:'30px' }}>
               <div style={{ display: 'flex', gap: '20%', justifyContent: 'center' }}>
-                <span title="Modifier " onClick={() => handleEdit(application)} > <EditOutlined /></span>
-                <span title="Supprimer " onClick={() => handleTableDeleteClick(application.IdApplication)}  ><DeleteOutlined /></span>
+                 <span title="Modifier " onClick={() => handleEdit(application)} > <EditOutlined /></span>
+                 <span title="Supprimer " onClick={() => handleTableDeleteClick(application.IdApplication)}  ><DeleteOutlined /></span> 
               </div>
-            </td>
+            </td> */}
           </tr>
         ))}
       </tbody>

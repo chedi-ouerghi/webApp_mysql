@@ -391,7 +391,7 @@ const fetchModules = async (IdApplication) => {
   const [currentUser, setCurrentUser] = useState(1);
 
   // pagination
-  const PAGE_SIZE = 5;
+  const PAGE_SIZE = 13;
   const indexOfLastPage = currentUser * PAGE_SIZE;
   const indexOfFirstPage = indexOfLastPage - PAGE_SIZE;
   const currentPages = filteredUser.slice(indexOfFirstPage, indexOfLastPage);

@@ -108,11 +108,11 @@
   background: #fff;
   cursor: pointer;
 }
-.body_table:hover  {
+/* .body_table:hover  { */
     /* background: rgb(34 67 163 / 86%); */
-    background-color: #2e5071;
-  color: #fff;
-}
+    /* background-color: #2e5071; */
+  /* color: #fff; */
+/* } */
 
 /* pagination */
 .pagination {

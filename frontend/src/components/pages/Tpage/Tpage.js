@@ -85,7 +85,7 @@ return;
       setPage([...page, newPage]);
         message.success('Création. succès.');
       setSelectedPage(null);
-      formRef.current.resetFields();
+      formRef.current.resetFields(); // Réinitialise les champs du formulaire
       setIdApplication('');
     })
     .catch((error) => {
@@ -308,7 +308,7 @@ const fetchModules = async (IdApplication) => {
   
   
   // pagination
-  const PAGE_SIZE = 14;
+  const PAGE_SIZE = 13;
   const indexOfLastPage = currentPage * PAGE_SIZE;
   const indexOfFirstPage = indexOfLastPage - PAGE_SIZE;
   const currentPages = filteredPage.slice(indexOfFirstPage, indexOfLastPage);

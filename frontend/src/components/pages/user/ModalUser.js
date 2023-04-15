@@ -1,33 +1,58 @@
-import { Form, Input, Modal, Select, message } from "antd";
-import React from "react";
+import { Button, Form, Image, Input, Modal, Select, message } from "antd";
+import React, { useState } from "react";
 import { MdCreateNewFolder, MdEditDocument } from "react-icons/md";
+import UserDrawer from "./UserDrawer";
 
 const ModalUser = ({ selectedUser, handleModalSubmit, isModalOpen, setIsModalOpen, formRef,
     applications, modules, page, NomUser, Email, PrenomUser, Photo, Role, setIdApplication, setIdModule,setIdPage, setNomUser,
 setPhoto,setPrenomUser,setRole,setEmail,IdApplication,IdModule ,IdPage}
 ) => {
+  const isEditMode = selectedUser !== null;
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
+
+  const showDrawer = () => {
+    setIsDrawerOpen(true);
+    setUserData({
+      nomUser: NomUser,
+      prenomUser: PrenomUser,
+      email: Email,
+      photo: Photo,
+    });
+  };
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+    setUserData(null);
+  };
+
     return (
         <div>
-          <Modal
-  title={
-    <div style={{ color: 'darkblue' }}>
-      <span style={{ display: 'flex', alignItems: 'center' }}>
-        {selectedUser ? (
-          <MdEditDocument style={{ marginRight: '2%', color: 'black' }} />
-        ) : (
-          <MdCreateNewFolder style={{ marginRight: '2%', color: 'black' }} />
-        )}
-        <span>{selectedUser ? 'Saisie Page' : 'Saisie Page'}</span>
-      </span>
-    </div>
-  }
-  open={isModalOpen}
-  onOk={handleModalSubmit}
-  onCancel={() => setIsModalOpen(false)}
-  okText="Enregistrer"
-  cancelText="Fermer"
-  destroyOnClose={true}
->
+         <Modal
+        title={
+          <div style={{ color: "darkblue" }}>
+            <span style={{ display: "flex", alignItems: "center" }}>
+              {isEditMode ? (
+                <MdEditDocument
+                  style={{ marginRight: "2%", color: "black" }}
+                />
+              ) : (
+                <MdCreateNewFolder
+                  style={{ marginRight: "2%", color: "black" }}
+                />
+              )}
+              <span>{isEditMode ? "Modifier Page" : "Saisie Page"}</span>
+            </span>
+          </div>
+        }
+        open={isModalOpen}
+        onOk={handleModalSubmit}
+        onCancel={() => setIsModalOpen(false)}
+        okText="Enregistrer"
+        cancelText="Fermer"
+        destroyOnClose={true}
+      >
   <Form
     onFinish={handleModalSubmit}
     ref={formRef}
@@ -48,13 +73,27 @@ setPhoto,setPrenomUser,setRole,setEmail,IdApplication,IdModule ,IdPage}
             Photo: selectedUser?.Photo || Photo,
             Role: selectedUser?.Role || Role,
           }}
-  >
+          >
+             <Form.Item
+      label={<span style={{ color: 'black' }}>Photo User</span>}
+      name="Photo"
+      rules={[{ required: true, message: 'Le nom de la page est obligatoire' }]}
+      initialValue={selectedUser?.Photo || Photo}
+    >
+      <Image alt="image"
+        onChange={e => setPhoto(e.target.value)}
+              />
+            </Form.Item>
+            
+                {!isEditMode && (
+<div style={{display:'flex',gap:'3%',flexWrap:'wrap',position:'relative'}}>
+
     <Form.Item
       label={<span style={{ color: 'black' }}>Nom Application</span>}
       name="IdApplication"
       initialValue={selectedUser?.IdApplication || IdApplication}
     >
-      <Select
+      <Select style={{width:'130px'}}
         showSearch
         placeholder="Sélectionner une application"
         optionFilterProp="children"
@@ -80,7 +119,7 @@ value={application.IdApplication}
       name="IdModule"
       initialValue={selectedUser?.IdModule || IdModule}
     >
-      <Select
+      <Select style={{width:'130px'}}
         showSearch
         placeholder="Sélectionner un module"
         optionFilterProp="children"
@@ -101,32 +140,37 @@ value={application.IdApplication}
         ))}
       </Select>
             </Form.Item>
-       <Form.Item
-label={<span style={{ color: "black" }}>Nom Page</span>}
-name="IdPage"
-initialValue={selectedUser?.IdPage || IdPage}
+              
+<Form.Item
+  label={<span style={{ color: 'black' }}>Nom Page</span>}
+  name="IdPage"
+  initialValue={selectedUser?.IdPage || IdPage}
 >
-<Select
-showSearch
-placeholder="Sélectionner une page"
-          optionFilterProp="children"
-          disabled={selectedUser !== null}
-placement="bottom"
-filterOption={(input, option) =>
-option.children
-.toLowerCase()
-.indexOf(input.toLowerCase()) >= 0
-}
-onChange={(value) => setIdPage(value)}
->
-{page &&
-page.map((pages) => (
-<Select.Option key={pages.IdPage} value={pages.IdPage}>
-{pages.NomPage}
-</Select.Option>
-))}
-</Select>
+  <Select style={{width:'130px'}}
+    showSearch
+    placeholder="Sélectionner une page"
+    optionFilterProp="children"
+    disabled={selectedUser !== null}
+    placement="bottom"
+    filterOption={(input, option) =>
+      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    }
+    onChange={value => setIdPage(value)}
+  >
+    {page && page.filter(p => p.IdModule === IdModule).map(p => (
+      <Select.Option
+        key={p.IdPage}
+        value={p.IdPage}
+      >
+        {p.NomPage}
+      </Select.Option>
+    ))}
+  </Select>
 </Form.Item>
+                
+</div>
+      )}
+<div style={{display:'flex',gap:'7%',flexWrap:'wrap'}}>
     <Form.Item
       label={<span style={{ color: 'black' }}>Nom User</span>}
       name="NomUser"
@@ -150,7 +194,7 @@ page.map((pages) => (
         autoComplete="off"
         onChange={e => setPrenomUser(e.target.value)}
       />
-          </Form.Item>
+                </Form.Item>
     <Form.Item
       label={<span style={{ color: 'black' }}>Email User</span>}
       name="Email"
@@ -161,18 +205,6 @@ page.map((pages) => (
         placeholder="Saisir le nom de la page"
         autoComplete="off"
         onChange={e => setEmail(e.target.value)}
-      />
-          </Form.Item>
-    <Form.Item
-      label={<span style={{ color: 'black' }}>Photo User</span>}
-      name="Photo"
-      rules={[{ required: true, message: 'Le nom de la page est obligatoire' }]}
-      initialValue={selectedUser?.Photo || Photo}
-    >
-      <Input
-        placeholder="Saisir le nom de la page"
-        autoComplete="off"
-        onChange={e => setPhoto(e.target.value)}
       />
           </Form.Item>
     <Form.Item
@@ -187,8 +219,17 @@ page.map((pages) => (
         onChange={e => setRole(e.target.value)}
       />
           </Form.Item>
-          
-  </Form>
+   </div>
+                          
+
+          </Form>
+{selectedUser !== null && (
+  <Button type="primary" onClick={showDrawer}>
+    Open
+  </Button>
+)}
+<UserDrawer userData={userData} closeDrawer={closeDrawer} isDrawerOpen={isDrawerOpen} />
+
 </Modal>
   
         </div>

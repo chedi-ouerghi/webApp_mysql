@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPage, deletePage, getpage, updatePage } from "../../api/apiPage";
 import { getApplications } from "../../api/apiApplicarion";
 import { getModules } from "../../api/apiModule";
-import { Checkbox, Empty, Form, Input, Pagination, Select, message } from "antd";
+import {  Empty, Form, Input, Pagination, Select, message } from "antd";
 import Modal from "antd/es/modal";
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import Table from "./Table";
@@ -49,7 +49,13 @@ const Tpage = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
 
   const handleRowClick = (record) => {
+    if (selectedRow === record.IdPage) {
+    setSelectedRow(null);
+    setSelectedRowData(null);
+  } else {
+    setSelectedRow(record.IdPage);
     setSelectedRowData(record);
+    }
     console.log(record.IdPage, record.IdApplication, record.IdModule);
           setSelectedRow((selectedRow === record.IdPage) ? null : record.IdPage);
 
@@ -76,21 +82,25 @@ const handleCreatePage = () => {
 message.error('Veuillez remplir le champ "Nom Page"');
 return;
 }
-  createPage({
-    IdApplication: IdApplication,
-    IdModule: IdModule,
-    NomPage: NomPage,
+ createPage({
+  IdApplication: IdApplication,
+  IdModule: IdModule,
+  NomPage: NomPage,
+})
+  .then((newPage) => {
+    setPage([...page, newPage]);
+    message.success('Création. succès.');
+    setSelectedPage(null);
+  formRef.current.setFieldsValue({
+      IdApplication: '',
+      IdModule: '',
+      NomPage: '',
+  });
+    setIdApplication('');
   })
-    .then((newPage) => {
-      setPage([...page, newPage]);
-        message.success('Création. succès.');
-      setSelectedPage(null);
-      formRef.current.resetFields(); // Réinitialise les champs du formulaire
-      setIdApplication('');
-    })
-    .catch((error) => {
-      message.error(`Création. échoué`);
-    });
+  .catch((error) => {
+    message.error(`Création. échoué`);
+  });
 };
     // ::::::::::::::::::
 const handleModalSubmit = async () => {
@@ -98,9 +108,6 @@ const handleModalSubmit = async () => {
     handleCreatePage();
     return;
   }
-
-  console.log('id:', selectedPage.IdPage, IdApplication);
-  console.log('data:', IdPage, NomPage, IdApplication);
 
   try {
     // Fetch applications
@@ -117,20 +124,17 @@ const handleModalSubmit = async () => {
       IdModule: IdModule,
       NomPage: NomPage,
     };
-     if (!NomPage) {
-message.error('Veuillez remplir le champ "Nom Page"');
-return;
-}
+    
     const response = await updatePage(selectedPage.IdPage, data);
     console.log(response);
     setIsModalOpen(false);
     message.success('Màj. succès.');
+    formRef.current.resetFields(); // Réinitialise les champs du formulaire
   } catch (error) {
     console.error(error);
-    message.error('Erueur Màj.');
+    message.error(error.response?.data?.error ||'Erueur Màj.');
   }
 };
-
  
   // double click to open modal edit
   const handleRowDoubleClick = (record) => {
@@ -148,111 +152,66 @@ return;
 
   const handleEdit = (rowData) => {
     console.log('handleEdit called', rowData);
+      if (selectedRowData) {
     if (rowData) {
       setIdPage(rowData.IdPage);
       setIdApplication(rowData.IdApplication)
       setIdModule(rowData.IdModule);
       setNomPage(rowData.NomPage);
       // setNomApp(rowData.NomApplication);
-    }
-  setSelectedPage(rowData);
-  setIsModalOpen(true);
+        setIsModalOpen(true);
+     } else {
+      message.info('Sélectionnez une ligne à modifier');
+        }
+          setSelectedPage(rowData);
+
+         } else {
+    message.info('Sélectionnez une ligne à modifier');
+  }
   };
   
 // fonction delete with confirmation
-const handleDelete = (id) => {
-  if (id) {
-    deletePage(id)
-      .then(() => {
-        setPage(page.filter(pages => pages.IdPage !== id));
-        message.success('Suppression réussie.');
-      })
-      .catch(error => {
-        message.error('Suppression échouée.');
-      });
-  } else {
-    deletePage(selectedRows)
-      .then(() => {
-        setPage(page.filter(pages => !selectedRows.includes(pages.IdPage)));
-        setSelectedRows([]);
-        message.success('Suppression réussie.');
-      })
-      .catch(error => {
-        message.error('Suppression échouée.');
-      });
+const handleDelete = (rowData) => {
+   if (!rowData || !rowData.IdPage) {
+    console.error('IdPage is missing in rowData:', rowData);
+    return;
   }
-};
-
-// handle delete click inside table
-const handleTableDeleteClick = (id) => {
-  confirm({
-    title: 'Voulez-vous supprimer la ligne ?',
-    icon: <ExclamationCircleOutlined />,
-    okText: 'Oui',
-    cancelText: 'Non',
-    okType: 'danger',
-    cancelButtonProps: {
-      style: { fontWeight: 'normal' }
-    },
-    okButtonProps: {
-      style: { fontWeight: 'normal' }
-    },
-    onOk() {
-      handleDelete(id);
-    },
-    onCancel() {},
-  });
+  deletePage(rowData.IdPage)
+    .then(() => {
+      setModules(modules.filter(module => module.IdPage !== rowData.IdPage));
+      setSelectedRows([]);
+      setSelectedRowData(null);
+      message.success('Suppression réussie.');
+    })
+    .catch(error => {
+      message.error(error.response?.data?.error ||'Suppression échouée.');
+    });
 };
 
 // handle delete click outside table
 const handleOutsideDeleteClick = () => {
+   if (!selectedRowData) {
+    message.info('Sélectionnez une ligne à supprimer');
+    return;
+  }
   confirm({
-    title: 'Voulez-vous supprimer la ligne ?',
+    title: 'Voulez-vous supprimer la ligne?',
     icon: <ExclamationCircleOutlined />,
-    okText: 'Oui',
-    cancelText: 'Non',
+    cancelText: 'non', 
+    okText: 'oui',    
     okType: 'danger',
-    cancelButtonProps: {
-      style: { fontWeight: 'normal' }
-    },
-    okButtonProps: {
-      style: { fontWeight: 'normal' }
-    },
     onOk() {
-      handleDelete();
+      if (selectedRowData) {
+        handleDelete(selectedRowData);
+      } else {
+        console.error('Cannot delete undefined row data');
+      }
     },
     onCancel() {},
   });
 };
 
     // ::::::::::::::::
-
- const handleCheckboxChange = (id, checked) => {
-  console.log(`Checkbox with id ${id} is ${checked ? 'checked' : 'unchecked'}.`);
-  setSelectedRows((rows) => {
-    if (checked) {
-      // Uncheck the previously selected row
-      if (selectedRow !== null && selectedRow !== id) {
-        const updatedRows = rows.filter((row) => row !== selectedRow);
-        // Uncheck the checkbox of the previously selected row
-        const currentCheckbox = document.getElementById(selectedRow);
-        if (currentCheckbox) {
-          currentCheckbox.checked = false;
-        }
-        return [...updatedRows, id];
-      } else {
-        return [...rows, id];
-      }
-    } else {
-      // Uncheck the selected row
-      if (selectedRow === id) {
-        setSelectedRow(null);
-      }
-      return rows.filter((row) => row !== id);
-    }
-  });
-  setSelectedRow(checked ? id : null);
-  };
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -366,15 +325,13 @@ const pageCount = Math.ceil(filteredPage.length / PAGE_SIZE);
             <GrAdd style={{ display: 'flex', alignItems: 'center', height: "100%", margin: '0% 1%' }} />
             Nouveau
           </span>
-        {selectedRows.length === 1 && (
-        <>
        <span
   className='btn_mod'
   style={{ width: '50%', color: 'black', fontWeight: '500', fontSize: 'smaller' }}
   onClick={() => handleEdit(selectedRowData)} 
   title="modifier"
   icon={<EditOutlined style={{ color: 'black' }} />}
-  disabled={selectedRows.length !== 1}
+      disabled={!selectedRowData}
 >
   Modifier
 </span>
@@ -383,14 +340,12 @@ const pageCount = Math.ceil(filteredPage.length / PAGE_SIZE);
             style={{ width: '50%', color: 'black', fontWeight: '500', fontSize: 'smaller' }}
             danger={true.toString()}
             title="Supprimer"
-            disabled={selectedRows.length !== 1}
-            onClick={handleOutsideDeleteClick}
+            // disabled={selectedRows.length !== 1}
+           onClick={() => handleOutsideDeleteClick(selectedRowData)}
             icon={<DeleteOutlined />}
           >
             Supprimer
           </span>
-        </>
-          )}
         </div>
       </div>
      <Table
@@ -403,12 +358,10 @@ const pageCount = Math.ceil(filteredPage.length / PAGE_SIZE);
   filteredPage={filteredPage} 
   handleRowDoubleClick={handleRowDoubleClick}
   handleRowClick={handleRowClick}
-  handleCheckboxChange={handleCheckboxChange}
   handleDelete={handleDelete}
         confirm={confirm}
         selectedRow={selectedRow}
   handleEdit={handleEdit}
-  handleTableDeleteClick={handleTableDeleteClick}
         handleSort={handleSort}
         currentPages={currentPages}
 />
@@ -479,31 +432,33 @@ const pageCount = Math.ceil(filteredPage.length / PAGE_SIZE);
     initialValues={{ NomPage: selectedPage?.NomPage || "" }}
   >
     <Form.Item
-      label={<span style={{ color: 'black' }}>Nom Application</span>}
-      name="IdApplication"
-      initialValue={selectedPage?.IdApplication || IdApplication}
+  label={<span style={{ color: 'black' }}>Nom Application</span>}
+  name="IdApplication"
+  initialValue={selectedPage?.IdApplication || IdApplication}
+>
+  <Select
+    showSearch
+    placeholder="Sélectionner une application"
+    optionFilterProp="children"
+    defaultValue={IdApplication || undefined} // ajout de defaultValue
+    disabled={selectedPage !== null}
+    placement="bottom"
+    filterOption={(input, option) =>
+      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    }
+    onChange={value => setIdApplication(value)}
+  >
+   {applications && applications.map(application => (
+    <Select.Option
+      key={application.IdApplication}
+      value={application.IdApplication}
     >
-      <Select
-        showSearch
-        placeholder="Sélectionner une application"
-        optionFilterProp="children"
-        disabled={selectedPage !== null}
-        placement="bottom"
-        filterOption={(input, option) =>
-          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }
-        onChange={value => setIdApplication(value)}
-      >
-       {applications && applications.map(application => (
-<Select.Option
-key={application.IdApplication}
-value={application.IdApplication}
-          >
-            {application.NomApplication}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
+      {application.NomApplication}
+    </Select.Option>
+   ))}
+  </Select>
+</Form.Item>
+
     <Form.Item
       label={<span style={{ color: 'black' }}>Nom Module</span>}
       name="IdModule"
@@ -512,7 +467,8 @@ value={application.IdApplication}
       <Select
         showSearch
         placeholder="Sélectionner un module"
-        optionFilterProp="children"
+              optionFilterProp="children"
+                  defaultValue={IdModule || undefined} // ajout de defaultValue
         disabled={selectedPage !== null}
         placement="bottom"
         filterOption={(input, option) =>

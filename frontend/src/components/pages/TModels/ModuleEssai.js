@@ -1,8 +1,7 @@
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Empty, Form, Input, message, Modal, Pagination, Select } from "antd";
+import {  Empty, Form, Input, message, Modal, Pagination, Select } from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import { MdEditDocument, MdCreateNewFolder } from 'react-icons/md';
-import { GrAdd, GrLinkNext,GrLinkPrevious } from "react-icons/gr";
+import { GrAdd } from "react-icons/gr";
 import { getApplications } from "../../api/apiApplicarion";
 import { createModule, deleteModule, getModules, updateModule } from "../../api/apiModule";
 import './module.css';
@@ -19,7 +18,6 @@ const [NomModule, setNomModule] = useState('');
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [isSortAscending, setIsSortAscending] = useState(true);
   const formRef = useRef(null);
-  const [form] = Form.useForm(); // Add this line to create a form instance
 const { confirm } = Modal;
 const [selectedRows, setSelectedRows] = useState([]);
     const [rowCount, setRowCount] = useState(0);
@@ -108,7 +106,7 @@ return;
       setNomModule('');
     })
     .catch(error => {
-      message.error(`Création. échoué`);
+      message.error(error.response?.data?.error ||`Création. échoué`);
     });
 };
     // ::::::::::::::::::
@@ -138,61 +136,52 @@ return;
     message.success('Màj. succès.');
   } catch (error) {
     console.error(error);
-    message.error('Erueur Màj.');
+    message.error(error.response?.data?.error ||'Erueur Màj.');
   }
   };
   
   const handleEdit = (rowData) => {
   console.log('handleEdit called', rowData);
-  if (rowData) {
+    if (selectedRowData) {
+    if (rowData) {
     setCodeModule(rowData.CodeModule);
     setNomModule(rowData.NomModule);
     setIdModule(rowData.IdModule); 
     setNomApp(rowData.NomApplication);
+      setIsModalOpen(true);
+    } else {
+      message.info('Sélectionnez une ligne à modifier');
+    }
+    setSelectedModule(rowData);
+  } else {
+    message.info('Sélectionnez une ligne à modifier');
   }
-  setSelectedModule(rowData);
-  setIsModalOpen(true);
 };
   // fonction delete with confirmation
-const handleDelete = (id) => {
-  if (id) {
-    deleteModule(id)
-      .then(() => {
-        setApplications(modules.filter(module => module.IdModule !== id));
-        message.success('Suppression.réussie.');
-      })
-      .catch(error => {
-        message.error('Suppression.échoué.');
-      });
-  } else {
-    deleteModule(selectedRows)
-      .then(() => {
-        setApplications(modules.filter(module => !selectedRows.includes(module.IdModule)));
-        setSelectedRows([]);
-        message.success('Suppression.réussie.');
-      })
-      .catch(error => {
-        message.error('Suppression.échoué.');
-      });
+const handleDelete = (rowData) => {
+   if (!rowData || !rowData.IdModule) {
+    console.error('IdModule is missing in rowData:', rowData);
+    return;
   }
+  deleteModule(rowData.IdModule)
+    .then(() => {
+      setModules(modules.filter(module => module.IdModule !== rowData.IdModule));
+      setSelectedRows([]);
+      setSelectedRowData(null);
+      message.success('Suppression réussie.');
+    })
+    .catch(error => {
+      message.error(error.response?.data?.error ||'Suppression échouée.');
+    });
 };
 
-// handle delete click inside table
-const handleTableDeleteClick = (id) => {
-  confirm({
-    title: 'Voulez-vous supprimer la ligne?',
-    icon: <ExclamationCircleOutlined />,
-    cancelText: 'non',
-    okText: 'oui',    
-    okType: 'danger',
-    onOk() {
-      handleDelete(id);
-    },
-    onCancel() {},
-  });
-  };
+
   // handle delete click outside table
 const handleOutsideDeleteClick = () => {
+  if (!selectedRowData) {
+    message.info('Sélectionnez une ligne à supprimer');
+    return;
+  }
   confirm({
     title: 'Voulez-vous supprimer la ligne?',
     icon: <ExclamationCircleOutlined />,
@@ -200,43 +189,21 @@ const handleOutsideDeleteClick = () => {
     okText: 'oui',    
     okType: 'danger',
     onOk() {
-      handleDelete();
+      if (selectedRowData) {
+        handleDelete(selectedRowData);
+      } else {
+        console.error('Cannot delete undefined row data');
+      }
     },
     onCancel() {},
   });
 };
 
 
+
   // ::::::::::::::::
 
   const [selectedRow, setSelectedRow] = useState(null);
-  
-const handleCheckboxChange = (id, checked) => {
-  console.log(`Checkbox with id ${id} is ${checked ? 'checked' : 'unchecked'}.`);
-  setSelectedRows((rows) => {
-    if (checked) {
-      // Uncheck the previously selected row
-      if (selectedRow !== null && selectedRow !== id) {
-        const updatedRows = rows.filter((row) => row !== selectedRow);
-        // Uncheck the checkbox of the previously selected row
-        const currentCheckbox = document.getElementById(selectedRow);
-        if (currentCheckbox) {
-          currentCheckbox.checked = false;
-        }
-        return [...updatedRows, id];
-      } else {
-        return [...rows, id];
-      }
-    } else {
-      // Uncheck the selected row
-      if (selectedRow === id) {
-        setSelectedRow(null);
-      }
-      return rows.filter((row) => row !== id);
-    }
-  });
-  setSelectedRow(checked ? id : null);
-  };
   
   const [isDataAvailable, setIsDataAvailable] = useState(true);
 
@@ -266,11 +233,18 @@ useEffect(() => {
   // ::::::::::::::
   const [selectedRowData, setSelectedRowData] = useState(null);
 
-  const handleRowClick = (record) => {
+
+    const handleRowClick = (record) => {
+  if (selectedRow === record.IdModule) {
+    setSelectedRow(null);
+    setSelectedRowData(null);
+  } else {
+    setSelectedRow(record.IdModule);
     setSelectedRowData(record);
-    console.log(record.IdApplication,record.IdModule);
-      setSelectedRow((selectedRow === record.IdModule) ? null : record.IdModule);
-  }; 
+    }
+      message.info((selectedRow === record.IdModule) ? null : record.IdModule)
+
+};
 
   // columns of table
 const columns = [
@@ -379,15 +353,13 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
             <GrAdd style={{ display: 'flex', alignItems: 'center', height: "100%", margin: '0% 1%' }} />
             Nouveau
           </span>
-        {selectedRows.length === 1 && (
-        <>
        <span
   className='btn_mod'
   style={{ width: '50%', color: 'black', fontWeight: '500', fontSize: 'smaller' }}
   onClick={() => handleEdit(selectedRowData)} 
   title="modifier"
   icon={<EditOutlined style={{ color: 'black' }} />}
-  disabled={selectedRows.length !== 1}
+      disabled={!selectedRowData}
 >
   Modifier
 </span>
@@ -396,14 +368,12 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
             style={{ width: '50%', color: 'black', fontWeight: '500', fontSize: 'smaller' }}
             danger
             title="Supprimer"
-            disabled={selectedRows.length !== 1}
-            onClick={handleOutsideDeleteClick}
+            // disabled={selectedRows.length !== 1}
+          onClick={() => handleOutsideDeleteClick(selectedRowData)}
             icon={<DeleteOutlined />}
           >
             Supprimer
           </span>
-        </>
-          )}
           </div>
           
     </div>
@@ -417,7 +387,7 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
           {column.title}
         </th>
       ))}
-      <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th>
+      {/* <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th> */}
     </tr>
   </thead>
   <tbody >
@@ -455,7 +425,7 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
         <td style={{
           color: 'black', border: '2px solid gray', fontSize: 'smaller', height: '30px'
         }}>{module.NomModule}</td>
-        <td style={{
+        {/* <td style={{
           color: 'black', border: '2px solid gray', width: '5%', fontSize: 'smaller', height: '30px'
         }}>
           <div style={{
@@ -464,7 +434,7 @@ const pageCount = Math.ceil(filteredModules.length / PAGE_SIZE);
              <span title="Modifier " onClick={() => handleEdit(module)} > <EditOutlined /></span>
                 <span title="Supprimer " onClick={() => handleTableDeleteClick(module.IdModule)}  ><DeleteOutlined /></span>
           </div>
-        </td>
+        </td> */}
       </tr>
     ))}
   </tbody>

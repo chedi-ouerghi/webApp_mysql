@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, message, Form, Checkbox, Modal, Button, Empty, Popover, Pagination } from 'antd';
+import { Input, message, Form,  Modal,  Empty,  Pagination } from 'antd';
 import { createApplication, deleteApplication, getApplications, updateApplication } from '../../api/apiApplicarion';
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { GrAdd } from "react-icons/gr";
 import './tapp.css';
 import Search from 'antd/es/transfer/search';
-import { Link } from 'react-router-dom';
 
 const TApp = () => {
   const [applications, setApplications] = useState([]);
@@ -15,8 +14,6 @@ const TApp = () => {
   const [nomApplication, setNomApplication] = useState('');
   const [isSortAscending, setIsSortAscending] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-const [form] = Form.useForm(); // Add this line to create a form instance
 const formRef = useRef(null);
   const [rowCount, setRowCount] = useState(0);
 
@@ -80,7 +77,7 @@ return;
         setNomApplication('');
       })
       .catch(error => {
-        message.error('Màj. échoué.');
+        message.error(error.response?.data?.error ||'Màj. échoué.');
       });
   } else {
     createApplication({
@@ -96,7 +93,7 @@ return;
         setNomApplication('');
       })
        .catch(error => {
-        message.error(`Création. échoué. Erreur: ${'le code de l\'application est unique'}`);
+        message.error(error.response?.data?.error ||`Création. échoué. Erreur: ${'le code de l\'application est unique'}`);
       });
   }
 };
@@ -127,45 +124,25 @@ const handleEdit = (rowData) => {
   // ::::::::::::::::::
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
-  
-const handleCheckboxChange = (id, checked) => {
-  console.log(`Checkbox with id ${id} is ${checked ? 'checked' : 'unchecked'}.`);
-  setSelectedRows((rows) => {
-    if (checked) {
-      // Uncheck the previously selected row
-      if (selectedRow !== null && selectedRow !== id) {
-        const updatedRows = rows.filter((row) => row !== selectedRow);
-        // Uncheck the checkbox of the previously selected row
-        const currentCheckbox = document.getElementById(selectedRow);
-        if (currentCheckbox) {
-          currentCheckbox.checked = false;
-        }
-        return [...updatedRows, id];
-      } else {
-        return [...rows, id];
-      }
-    } else {
-      // Uncheck the selected row
-      if (selectedRow === id) {
-        setSelectedRow(null);
-      }
-      return rows.filter((row) => row !== id);
-    }
-  });
-  setSelectedRow(checked ? id : null);
-};
 
-// fonction delete with confirmation
+  // fonction delete with confirmation
 const handleDelete = (rowData) => {
+  if (!rowData || !rowData.IdApplication) {
+    message.error("L'ID de l'application n'est pas défini.");
+    return;
+  }
+  
   deleteApplication(rowData.IdApplication)
     .then(() => {
       setApplications(applications.filter(application => application.IdApplication !== rowData.IdApplication));
       setSelectedRows([]);
       setSelectedRowData(null);
+            console.log('Suppression réussie.');
       message.success('Suppression réussie.');
     })
     .catch(error => {
-      message.error('Suppression échouée.');
+      console.error(error);
+      message.error(error.response?.data?.error || 'Suppression échouée.');
     });
 };
 

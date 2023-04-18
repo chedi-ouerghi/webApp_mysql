@@ -74,22 +74,36 @@ TApplication.update = (db, id, application, result) => {
   });
 };
 
-
 TApplication.remove = (id, db, result) => {
-  db.query('DELETE FROM tapplication WHERE IdApplication = ?', id, (err, res) => {
+  // Check if the application is used in the tmodule table
+  db.query('SELECT COUNT(*) AS count FROM tmodule WHERE IdApplication = ?', id, (err, res) => {
     if (err) {
-      console.log('Error while deleting application with IdApplication:', id, err);
+      console.log('Error while checking tmodule for application with IdApplication:', id, err);
       result(err, null);
       return;
     }
-    if (res.affectedRows == 0) {
-      result({ message: 'Application not found' }, null);
+    const count = res[0].count;
+    if (count > 0) {
+      result({ message: 'Cannot delete application as it is used in the tmodule table' }, null);
       return;
     }
-    console.log('Application deleted successfully!');
-    result(null, res);
+    // Delete the application
+    db.query('DELETE FROM tapplication WHERE IdApplication = ?', id, (err, res) => {
+      if (err) {
+        console.log('Error while deleting application with IdApplication:', id, err);
+        result(err, null);
+        return;
+      }
+      if (res.affectedRows == 0) {
+        result({ message: 'Application not found' }, null);
+        return;
+      }
+      console.log('Application deleted successfully!');
+      result(null, res);
+    });
   });
 };
+
 TApplication.removeMultiple = (ids, db, result) => {
   db.query('DELETE FROM tapplication WHERE IdApplication IN (?)', [ids], (err, res) => {
     if (err) {

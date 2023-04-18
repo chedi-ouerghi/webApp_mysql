@@ -1,4 +1,6 @@
 const Tuser = require('../models/tuser');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 const tuserControllers = {};
 
@@ -50,31 +52,38 @@ tuserControllers.create = (db) => (req, res) => {
   });
 };
 
-tuserControllers.update = (db) => (req, res) => {
-  const { NomUser, PrenomUser, Email, Photo} = req.body || {};
-  if (!NomUser, !PrenomUser, !Email, !Photo ) {
-    res.status(400).send({
-      message: 'NomUser, PrenomUser, Email, Photo  can not be empty'
-    });
-    return;
-  }
-  const user = {  NomUser, PrenomUser, Email, Photo};
-  Tuser.update(db, req.params.id, user, (err, data) => {
-    if (err) {
-      if (err.message === 'user not found') {
-        res.status(404).send({
-          message: `user with IdUser ${req.params.id} not found`
-        });
-      } else {
-        res.status(500).send({
-          message: err.message || `Error while updating user with IdUser ${req.params.id}`
-        });
-      }
-    } else {
-      res.send(data);
+tuserControllers.update = (db) => [
+  upload.single('Photo'),
+  (req, res) => {
+    const { NomUser, PrenomUser, Email } = req.body || {};
+    if (!NomUser || !PrenomUser || !Email) {
+      res.status(400).send({
+        message: 'NomUser, PrenomUser and Email can not be empty'
+      });
+      return;
     }
-  });
-};
+    const user = { NomUser, PrenomUser, Email };
+    if (req.file) {
+      user.Photo = req.file.path;
+    }
+    Tuser.update(db, req.params.id, user, (err, data) => {
+      if (err) {
+        if (err.message === 'user not found') {
+          res.status(404).send({
+            message: `user with IdUser ${req.params.id} not found`
+          });
+        } else {
+          res.status(500).send({
+            message: err.message || `Error while updating user with IdUser ${req.params.id}`
+          });
+        }
+      } else {
+        res.send(data);
+      }
+    });
+  }
+];
+
 
 tuserControllers.remove = (db) => (req, res) => {
 const id = req.params.id;

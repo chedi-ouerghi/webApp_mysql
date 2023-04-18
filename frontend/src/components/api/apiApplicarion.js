@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import axios from 'axios';
 
 export const getApplications = () => {
@@ -52,8 +51,8 @@ export const deleteApplication = (id) => {
     })
     .catch(error => {
       console.error(error);
-         throw error.response?.data?.error || error.message || 'Error deleted application';
-
+      throw error.response?.data?.error || error.message || 'Error deleting application';
     });
 };
+
 

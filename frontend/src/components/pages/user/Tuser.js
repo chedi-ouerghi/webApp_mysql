@@ -4,12 +4,12 @@ import { createUser, deleteUser, getUser, updateUser } from "../../api/apiUser";
 import { getpage } from "../../api/apiPage";
 import { getModules } from "../../api/apiModule";
 import { getApplications } from "../../api/apiApplicarion";
-import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { GrAdd } from "react-icons/gr";
-import { MdCreateNewFolder, MdEditDocument } from "react-icons/md";
-import { Form, Input, Modal, Pagination, Select, message } from "antd";
+import { Button,   Modal, Pagination, Popconfirm,  message } from "antd";
 import SearchBar from "./SearchBar";
 import ModalUser from "./ModalUser";
+import UserDrawer from "./UserDrawer";
 
 const Tuser = () => {
   const [user, setUser] = useState([]); 
@@ -30,8 +30,8 @@ const Tuser = () => {
     const [selectedRow, setSelectedRow] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const formRef = useRef(null);
-  const [form] = Form.useForm(); // Add this line to create a form instance
   const { confirm } = Modal;
+    const [rowCount, setRowCount] = useState(0);
 
   // get all pages and modules and applications
   useEffect(() => {
@@ -51,21 +51,55 @@ const Tuser = () => {
     fetchData();
   }, [user]);
 
-// double click to open modal edit
-  const handleRowDoubleClick = (record) => {
-    console.log('handleEdit called', record);
-    setSelectedUser(record);
-    setIdPage(record.IdPage);
-    setIdApplication(record.IdApplication);
-    setIdModule(record.IdModule);
- setIdUser(record.IdUser);
-    setNomUser(record.NomUser);
-   setPrenomUser(record.PrenomUser);
-   setEmail(record.Email);
-   setPhoto(record.Photo);
-    setRole(record.Role);
-    setIsModalOpen(true);
+const [isPopUpVisible, setIsPopUpVisible] = useState(false);
+
+const handleRowDoubleClick = (record) => {
+  console.log('handleEdit called', record);
+  setSelectedUser(record);
+  setIdPage(record.IdPage);
+  setIdApplication(record.IdApplication);
+  setIdModule(record.IdModule);
+  setIdUser(record.IdUser);
+  setNomUser(record.NomUser);
+  setPrenomUser(record.PrenomUser);
+  setEmail(record.Email);
+  setPhoto(record.Photo);
+  setRole(record.Role);
+
+  // Show the pop-up
+  setIsPopUpVisible(true);
   };
+  const handleInfoClick = () => {
+  // Close the pop-up
+  setIsPopUpVisible(false);
+  // Open the drawer
+  showDrawer();
+  };
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
+
+  const showDrawer = () => {
+    setIsDrawerOpen(true);
+    setUserData({
+      nomUser: NomUser,
+      prenomUser: PrenomUser,
+      email: Email,
+      photo: Photo,
+    });
+  };
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+    setUserData(null);
+  };
+
+const handleModifierClick = () => {
+  // Close the pop-up
+  setIsPopUpVisible(false);
+  // Open the modal
+  setIsModalOpen(true);
+  };
+  
   const [selectedRowData, setSelectedRowData] = useState(null);
 
   const handleRowClick = (record) => {
@@ -137,7 +171,7 @@ return;
       setIdApplication('');
     })
     .catch((error) => {
-      message.error(`Création. échoué`);
+      message.error(error.response?.data?.error ||`Création. échoué`);
     });
 };
     // ::::::::::::::::::
@@ -230,7 +264,7 @@ const handleDelete = (id) => {
         message.success('Suppression réussie.');
       })
       .catch(error => {
-        message.error('Suppression échouée.');
+        message.error(error.response?.data?.error ||'Suppression échouée.');
       });
   } else {
     deleteUser(selectedRows)
@@ -240,31 +274,11 @@ const handleDelete = (id) => {
         message.success('Suppression réussie.');
       })
       .catch(error => {
-        message.error('Suppression échouée.');
+        message.error(error.response?.data?.error ||'Suppression échouée.');
       });
   }
 };
 
-// handle delete click inside table
-const handleTableDeleteClick = (id) => {
-  confirm({
-    title: 'Voulez-vous supprimer la ligne ?',
-    icon: <ExclamationCircleOutlined />,
-    okText: 'Oui',
-    cancelText: 'Non',
-    okType: 'danger',
-    cancelButtonProps: {
-      style: { fontWeight: 'normal' }
-    },
-    okButtonProps: {
-      style: { fontWeight: 'normal' }
-    },
-    onOk() {
-      handleDelete(id);
-    },
-    onCancel() {},
-  });
-};
 
 // handle delete click outside table
 const handleOutsideDeleteClick = () => {
@@ -286,35 +300,6 @@ const handleOutsideDeleteClick = () => {
     onCancel() {},
   });
 };
-
-  
- const handleCheckboxChange = (id, checked) => {
-  console.log(`Checkbox with id ${id} is ${checked ? 'checked' : 'unchecked'}.`);
-  setSelectedRows((rows) => {
-    if (checked) {
-      // Uncheck the previously selected row
-      if (selectedRow !== null && selectedRow !== id) {
-        const updatedRows = rows.filter((row) => row !== selectedRow);
-        // Uncheck the checkbox of the previously selected row
-        const currentCheckbox = document.getElementById(selectedRow);
-        if (currentCheckbox) {
-          currentCheckbox.checked = false;
-        }
-        return [...updatedRows, id];
-      } else {
-        return [...rows, id];
-      }
-    } else {
-      // Uncheck the selected row
-      if (selectedRow === id) {
-        setSelectedRow(null);
-      }
-      return rows.filter((row) => row !== id);
-    }
-  });
-  setSelectedRow(checked ? id : null);
-  };
-
 
     const [searchQuery, setSearchQuery] = useState('');
 const [filteredUser, setFilteredUser] = useState([]);
@@ -371,30 +356,13 @@ const fetchModules = async (IdApplication) => {
     console.error(error);
   }
   };
-  const handleApplicationChange = (value) => {
-  setIdApplication(value);
-  setIdModule(null);
-  setIdPage(null);
-  const selectedApplication = applications.find(
-    (application) => application.IdApplication === value
-  );
-  if (selectedApplication) {
-    setModules(selectedApplication.Modules);
-  } else {
-    setModules([]);
-  }
-  setPage([]);
-};
-
-
-
   const [currentUser, setCurrentUser] = useState(1);
 
   // pagination
   const PAGE_SIZE = 13;
-  const indexOfLastPage = currentUser * PAGE_SIZE;
-  const indexOfFirstPage = indexOfLastPage - PAGE_SIZE;
-  const currentPages = filteredUser.slice(indexOfFirstPage, indexOfLastPage);
+  // const indexOfLastPage = currentUser * PAGE_SIZE;
+  // const indexOfFirstPage = indexOfLastPage - PAGE_SIZE;
+  // const currentPages = filteredUser.slice(indexOfFirstPage, indexOfLastPage);
 
 const pageCount = Math.ceil(filteredUser.length / PAGE_SIZE);
 
@@ -420,14 +388,9 @@ const pageCount = Math.ceil(filteredUser.length / PAGE_SIZE);
     pageNumbers.push(i);
   }
 
-  // ... fonction to calculate currentPage and renderPageNumbers
-        const [totalRowCount, setTotalRowCount] = useState(0);
-    const [rowCount, setRowCount] = useState(0);
 
-  const handleRowCount = () => {
-    setTotalRowCount(filteredUser.length);
-  };
-
+   
+  
   return(
       <div className='container_user'>
   <div className="header_bar">
@@ -480,8 +443,7 @@ const pageCount = Math.ceil(filteredUser.length / PAGE_SIZE);
         </div>
       </div>
   
-      <TableUser filteredUser={filteredUser} selectedRows={selectedRows} handleSort={handleSort}
-        handleCheckboxChange={handleCheckboxChange} selectedRow={selectedRow}
+      <TableUser filteredUser={filteredUser} handleSort={handleSort} selectedRow={selectedRow}
   handleRowDoubleClick={handleRowDoubleClick}
   handleRowClick={handleRowClick}
  />
@@ -508,13 +470,30 @@ const pageCount = Math.ceil(filteredUser.length / PAGE_SIZE);
             {rowCount}
           </span>
           </p>
-          </div>
-      <ModalUser selectedUser={selectedUser} handleModalSubmit={handleModalSubmit} isModalOpen={isModalOpen}
+      </div>
+       
+<UserDrawer userData={userData} closeDrawer={closeDrawer} isDrawerOpen={isDrawerOpen} />
+
+      <ModalUser isPopUpVisible={isPopUpVisible} selectedUser={selectedUser} handleModalSubmit={handleModalSubmit} isModalOpen={isModalOpen}
         applications={applications} modules={modules} NomUser={NomUser} Email={Email} setIsModalOpen={setIsModalOpen}
         PrenomUser={PrenomUser} Photo={Photo} Role={Role} setIdApplication={setIdApplication} setIdPage={setIdPage}
         setIdModule={setIdModule} setPhoto={setPhoto} setPrenomUser={setPrenomUser} setRole={setRole}
         setEmail={setEmail} setNomUser={setNomUser} IdApplication={IdApplication} IdModule={IdModule} IdPage={IdPage} />
-      </div>
+      {/* popap */}
+          <Modal
+  open={isPopUpVisible}
+  onCancel={() => setIsPopUpVisible(false)}
+        footer={[<Popconfirm key="info" title="Voulez-vous afficher les détails du utilisateur ?" onConfirm={handleInfoClick}>
+          <Button type="primary">Info</Button>
+        </Popconfirm>,
+          <Popconfirm key="modifier" title="Voulez-vous modifier cet utilisateur ?" onConfirm={handleModifierClick}>
+            <Button type="primary">Modifier</Button>
+          </Popconfirm>,]}
+>
+  <p>Veuillez choisir une action à effectuer :</p>
+      </Modal>
+
+    </div>
   )
 };
 

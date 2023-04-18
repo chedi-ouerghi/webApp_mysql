@@ -1,11 +1,8 @@
-import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
-import { Checkbox, Empty } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import './tpage.css'
 
-const Table = ({  currentPages,   handleRowDoubleClick,selectedRow,
-  selectedRows, handleEdit, handleTableDeleteClick, handleRowClick,
-  handleCheckboxChange, handleSort }) => {
+const Table = ({  currentPages,handleRowDoubleClick,selectedRow,
+   handleRowClick,handleSort }) => {
 
     // columns of table
   const columns = [
@@ -61,7 +58,7 @@ key: 'NomApplication',
                 {column.title}
               </th>
             ))}
-             <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th>
+             {/* <th style={{ border: '2px solid black', backgroundColor: '#2e445a',fontWeight:'400' }}>Action</th> */}
           </tr>
         </thead>
         <tbody>
@@ -147,33 +144,6 @@ key: 'NomApplication',
         >
           {row.NomPage}
         </td>
-        <td
-          style={{
-            color: "black",
-            border: "2px solid gray",
-            width: "5%",
-            fontSize: "smaller",
-            height: "30px",
-          }}
-                  >
-          <div
-            style={{
-              display: "flex",
-              gap: "20%",
-              justifyContent: "center",
-            }}
-                      >
-          <span title="Modifier" onClick={() => handleEdit(row)}>
-  <EditOutlined />
-</span>
-            <span
-              title="Supprimer"
-              onClick={() => handleTableDeleteClick(row.IdPage)}
-            >
-              <DeleteOutlined />
-            </span>
-        </div>
-      </td>
     </tr>
   ))}
 </tbody>

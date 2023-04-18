@@ -8,6 +8,8 @@ const ModalUser = ({ selectedUser, handleModalSubmit, isModalOpen, setIsModalOpe
 setPhoto,setPrenomUser,setRole,setEmail,IdApplication,IdModule ,IdPage}
 ) => {
   const isEditMode = selectedUser !== null;
+// const formData = new FormData();
+// formData.append('Photo', Photo);
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -74,16 +76,15 @@ setPhoto,setPrenomUser,setRole,setEmail,IdApplication,IdModule ,IdPage}
             Role: selectedUser?.Role || Role,
           }}
           >
-             <Form.Item
-      label={<span style={{ color: 'black' }}>Photo User</span>}
-      name="Photo"
-      rules={[{ required: true, message: 'Le nom de la page est obligatoire' }]}
-      initialValue={selectedUser?.Photo || Photo}
-    >
-      <Image alt="image"
-        onChange={e => setPhoto(e.target.value)}
-              />
-            </Form.Item>
+           <Form.Item
+  label={<span style={{ color: 'black' }}>Photo User</span>}
+              name="fileInput"
+              rules={[{ required: true, message: 'La photo est obligatoire' }]}
+  initialValue={selectedUser?.Photo || Photo}
+>
+  <Input type="text" onChange={e => setPhoto(e.target.files[0])} />
+</Form.Item>
+
             
                 {!isEditMode && (
 <div style={{display:'flex',gap:'3%',flexWrap:'wrap',position:'relative'}}>

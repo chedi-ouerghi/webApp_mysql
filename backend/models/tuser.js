@@ -56,25 +56,25 @@ Tuser.create = (db, user, result) => {
 };
 
 Tuser.update = (db, id, user, result) => {
-  console.log('Updating user with ID:', id);
-const query = `UPDATE tuser SET NomUser = ?, PrenomUser = ?, Email = ?, Photo = ? WHERE IdUser = ?`;
-  db.query(query, [user.NomUser,user.PrenomUser,user.Email,user.Photo, id], (err, res) => {
-    if (err) {
-      console.log('Error updating user:',id, err);
-      result(err, null);
-      return;
+  db.query(
+    'UPDATE tuser SET NomUser = ?, PrenomUser = ?, Email = ?, Photo = ? WHERE IdUser = ?',
+    [user.NomUser, user.PrenomUser, user.Email, user.Photo, id],
+    (err, res) => {
+      if (err) {
+        console.log('Error while updating user:', err);
+        result(err, null);
+        return;
+      }
+      if (res.affectedRows == 0) {
+        result({ message: 'user not found' }, null);
+        return;
+      }
+      console.log('user updated successfully!', { id, ...user });
+      result(null, { id, ...user });
     }
-
-    if (res.affectedRows == 0) {
-      console.log('user not found');
-      result({ message: 'user non trouvée' }, null);
-      return;
-    }
-
-    console.log('user updated successfully');
-    result(null, { IdUser: id, ...user });
-  });
+  );
 };
+
 
 Tuser.remove = (db,id, result) => {
   db.query('DELETE FROM tuser WHERE  IdUser = ?', id, (err, res) => {
